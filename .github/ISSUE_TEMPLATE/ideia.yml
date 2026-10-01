@@ -1,0 +1,28 @@
+name: Ideia ou pedido
+description: Sugira uma ferramenta ou melhoria.
+title: '[Ideia] '
+labels: [enhancement]
+body:
+  - type: textarea
+    id: tarefa
+    attributes:
+      label: O que você está tentando fazer?
+      description: 'Conte a tarefa, não só a ferramenta. Por exemplo: "trocar o preço num cartaz", "juntar 4 fotos para um post".'
+    validations:
+      required: true
+  - type: textarea
+    id: hoje
+    attributes:
+      label: Como você faz isso hoje?
+      description: Em outro app, de outro jeito no editor, ou não consegue.
+  - type: textarea
+    id: ideia
+    attributes:
+      label: Como imagina que poderia funcionar?
+  - type: checkboxes
+    id: principios
+    attributes:
+      label: Combinados do projeto
+      options:
+        - label: Entendo que o editor não envia imagens para servidores e não terá cadastro.
+          required: true

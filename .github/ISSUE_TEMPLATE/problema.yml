@@ -1,0 +1,56 @@
+name: Algo não funcionou
+description: Relate um problema no editor.
+title: '[Problema] '
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por avisar! As issues são públicas: **não anexe imagens pessoais** ou com dados de
+        outras pessoas. Se precisar de um exemplo, use uma imagem que possa ficar aberta.
+  - type: textarea
+    id: oque
+    attributes:
+      label: O que aconteceu?
+      description: E o que você esperava que acontecesse.
+    validations:
+      required: true
+  - type: textarea
+    id: passos
+    attributes:
+      label: Como repetir
+      placeholder: |
+        1. Abri uma imagem PNG com fundo transparente
+        2. Escolhi a varinha mágica e cliquei no fundo
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: aparelho
+    attributes:
+      label: Aparelho
+      options:
+        - Computador
+        - Celular Android
+        - iPhone
+        - Tablet
+    validations:
+      required: true
+  - type: input
+    id: navegador
+    attributes:
+      label: Navegador e versão
+      placeholder: Chrome 140, Safari 26, Firefox 143...
+    validations:
+      required: true
+  - type: input
+    id: versao
+    attributes:
+      label: Versão do editor
+      description: Aparece ao clicar no nome "Ateliê" no topo.
+      placeholder: '0.1.0'
+  - type: textarea
+    id: extra
+    attributes:
+      label: Algo mais?
+      description: Capturas de tela, mensagens de erro ou o tamanho da imagem ajudam.
