@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Ateliê de Colagem · editor de imagens grátis e sem cadastro</title>
+    <meta
+      name="description"
+      content="Recorte, cole e junte imagens, remova letras e objetos refazendo o fundo e troque cores. Grátis, sem cadastro, sem marca d'água, e sua foto nunca sai do seu aparelho."
+    />
+    <link rel="canonical" href="https://ateliedecolagem.com.br/" />
+    <meta name="theme-color" content="#e6e9e3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141716" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Ateliê de Colagem" />
+    <meta property="og:title" content="Ateliê de Colagem · editor de imagens grátis e sem cadastro" />
+    <meta
+      property="og:description"
+      content="Recorte, cole, remova objetos e troque cores direto no navegador. Grátis, sem cadastro, e sua foto nunca sai do aparelho."
+    />
+    <meta property="og:url" content="https://ateliedecolagem.com.br/" />
+    <meta property="og:image" content="https://ateliedecolagem.com.br/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Ateliê de Colagem",
+        "url": "https://ateliedecolagem.com.br/",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Qualquer navegador moderno",
+        "inLanguage": "pt-BR",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
+        "description": "Editor de imagens no navegador: recorte e cole entre imagens, remova letras e objetos refazendo o fundo, troque cores e alinhe elementos. Grátis e sem cadastro.",
+        "creator": {
+          "@type": "Organization",
+          "name": "Vértice",
+          "url": "https://eliasneto072.github.io/vertice/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="app" id="app">
+      <header class="top">
+        <button
+          class="brand"
+          id="btn-about"
+          type="button"
+          title="Sobre o Ateliê de Colagem"
+          aria-label="Sobre o Ateliê de Colagem"
+        >
+          <img class="brand-mark" src="/favicon.svg" alt="" width="30" height="30" /><span class="brand-name"
+            >Ateliê</span
+          ><span class="brand-sub">de colagem</span>
+        </button>
+        <div class="top-actions">
+          <button class="btn primary" id="btn-open" type="button">
+            <span>Abrir</span><span class="only-desktop">imagens</span>
+          </button>
+          <input type="file" id="file-input" accept="image/*" multiple hidden />
+          <div class="pair">
+            <button
+              class="btn icon"
+              id="btn-undo"
+              type="button"
+              aria-label="Desfazer"
+              title="Desfazer (Ctrl+Z)"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M9 14 4 9l5-5" />
+                <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
+              </svg>
+            </button>
+            <button
+              class="btn icon"
+              id="btn-redo"
+              type="button"
+              aria-label="Refazer"
+              title="Refazer (Ctrl+Shift+Z)"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m15 14 5-5-5-5" />
+                <path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" />
+              </svg>
+            </button>
+          </div>
+          <button class="btn" id="btn-canvas" type="button" title="Tamanho e fundo da tela">Tela</button>
+          <button class="btn" id="btn-export" type="button" title="Salvar como PNG ou JPG (Ctrl+S)">
+            Exportar
+          </button>
+        </div>
+      </header>
+
+      <nav class="tools" id="tools" aria-label="Ferramentas"></nav>
+      <nav class="dock-tabs" id="dock-tabs" aria-label="Painéis">
+        <button type="button" data-sheet="sec-tool" aria-pressed="false">
+          <span id="dock-tool">Mover</span>
+        </button>
+        <button type="button" data-sheet="sec-sel" aria-pressed="false">
+          <span>Seleção</span><i class="pip" id="dock-sel-pip" hidden></i>
+        </button>
+        <button type="button" data-sheet="sec-layers" aria-pressed="false">
+          <span>Camadas</span><b id="dock-layers">0</b>
+        </button>
+      </nav>
+
+      <main class="stage" id="stage">
+        <canvas id="scene"></canvas>
+        <canvas id="overlay"></canvas>
+        <div class="empty" id="empty" hidden>
+          <div class="empty-card">
+            <p class="empty-title">Traga as imagens para o tapete</p>
+            <p class="empty-text">
+              <span class="only-desktop"
+                >Arraste arquivos para cá, cole com Ctrl+V ou abra do computador.</span
+              ><span class="only-mobile">Toque em Abrir para escolher fotos da galeria.</span> A primeira
+              imagem define o tamanho da tela; as próximas viram camadas por cima.
+            </p>
+            <button class="btn primary" id="btn-open-2" type="button">Abrir imagens</button>
+          </div>
+        </div>
+        <div class="dropzone" id="dropzone" hidden>Solte para adicionar como camada</div>
+        <div class="actionbar" id="actionbar" hidden>
+          <span class="actionbar-text" id="actionbar-text"></span>
+          <div class="actionbar-btns" id="actionbar-btns"></div>
+        </div>
+        <aside class="note" id="note" hidden>
+          <p class="note-eyebrow">Exemplo carregado</p>
+          <p class="only-desktop">
+            O contorno do balão já está selecionado. Clique em <b>Manter só a seleção</b> no painel para tirar
+            o fundo dele, depois arraste o balão com <b>Mover (V)</b>.
+          </p>
+          <p class="only-mobile">
+            O contorno do balão já está selecionado. Toque em <b>Seleção</b> aqui embaixo e depois em
+            <b>Manter só a seleção</b>. Aí é só arrastar o balão com o dedo.
+          </p>
+          <div class="note-actions">
+            <button class="btn primary small" id="note-open" type="button">Usar minhas imagens</button>
+            <button class="btn small" id="note-close" type="button">Continuar no exemplo</button>
+          </div>
+        </aside>
+        <div class="zoom" id="zoom">
+          <button id="z-out" type="button" aria-label="Diminuir zoom" title="Diminuir zoom (Ctrl −)">
+            −
+          </button>
+          <button id="z-val" type="button" title="Ver em 100% (Ctrl+1)">100%</button>
+          <button id="z-in" type="button" aria-label="Aumentar zoom" title="Aumentar zoom (Ctrl +)">+</button>
+          <button id="z-fit" type="button" title="Ajustar à janela (Ctrl+0)">Ajustar</button>
+        </div>
+      </main>
+
+      <aside class="panel" id="panel" data-sheet="sec-tool">
+        <div class="sheet-head">
+          <span class="sheet-grip" aria-hidden="true"></span
+          ><button class="btn" id="sheet-close" type="button" aria-label="Fechar painel">✕</button>
+        </div>
+        <section class="sec" id="sec-tool">
+          <h2><span id="tool-title">Ferramenta</span><kbd id="tool-key">V</kbd></h2>
+          <div id="tool-opts"></div>
+        </section>
+        <section class="sec" id="sec-sel">
+          <h2><span>Seleção</span><span class="dim" id="sel-size">nenhuma</span></h2>
+          <div class="sel-grid">
+            <button
+              class="btn primary wide"
+              id="sa-keep"
+              type="button"
+              data-needs-sel
+              title="Apaga tudo fora da seleção na camada ativa"
+            >
+              Manter só a seleção
+            </button>
+            <button
+              class="btn wide"
+              id="sa-heal"
+              type="button"
+              data-needs-sel
+              title="Some com o que está selecionado e refaz o fundo com o que existe em volta"
+            >
+              Remover e refazer o fundo
+            </button>
+            <button
+              class="btn wide"
+              id="sa-fill"
+              type="button"
+              data-needs-sel
+              title="Pinta toda a área selecionada da camada ativa com a cor atual (Alt+Backspace)"
+            >
+              <span>Pintar a seleção com a cor atual</span><i class="dot" id="sa-fill-dot"></i>
+            </button>
+            <button
+              class="btn"
+              id="sa-cut"
+              type="button"
+              data-needs-sel
+              title="Recortar para nova camada (Ctrl+Shift+J)"
+            >
+              Recortar p/ camada
+            </button>
+            <button
+              class="btn"
+              id="sa-copy"
+              type="button"
+              data-needs-sel
+              title="Copiar para nova camada (Ctrl+J)"
+            >
+              Copiar p/ camada
+            </button>
+            <button
+              class="btn"
+              id="sa-del"
+              type="button"
+              data-needs-sel
+              title="Apagar a área selecionada (Delete)"
+            >
+              Apagar área <kbd>Del</kbd>
+            </button>
+            <button
+              class="btn"
+              id="sa-inv"
+              type="button"
+              data-needs-sel
+              title="Inverter seleção (Ctrl+Shift+I)"
+            >
+              Inverter
+            </button>
+            <button class="btn" id="sa-all" type="button" title="Selecionar a tela toda (Ctrl+A)">
+              Tudo <kbd>Ctrl A</kbd>
+            </button>
+            <button class="btn" id="sa-none" type="button" data-needs-sel title="Desmarcar (Ctrl+D)">
+              Desmarcar <kbd>Ctrl D</kbd>
+            </button>
+            <button
+              class="btn wide"
+              id="sa-crop"
+              type="button"
+              data-needs-sel
+              title="Corta a tela no retângulo da seleção"
+            >
+              Cortar a tela na seleção
+            </button>
+          </div>
+          <label class="chk" style="margin-top: 10px"
+            ><input type="checkbox" id="sel-healcut" /> Ao recortar, tapar o buraco com o fundo</label
+          >
+          <p class="hint">
+            Atalho: com <b>Mover</b>, arraste de dentro da seleção para recortar e já mover.<span
+              class="only-desktop"
+            >
+              Segurando Alt, copia em vez de recortar.</span
+            >
+          </p>
+        </section>
+        <section class="sec" id="sec-layers">
+          <h2><span>Camadas</span><span class="dim" id="layer-count">0</span></h2>
+          <div class="layer-list" id="layer-list" role="listbox" aria-label="Camadas"></div>
+          <div class="layer-actions">
+            <button
+              class="btn small"
+              id="la-new"
+              type="button"
+              title="Camada vazia do tamanho da tela, para pintar"
+            >
+              Nova
+            </button>
+            <button class="btn small" id="la-dup" type="button" title="Duplicar camada">Duplicar</button>
+            <button class="btn small" id="la-up" type="button" title="Subir camada">Subir</button>
+            <button class="btn small" id="la-down" type="button" title="Descer camada">Descer</button>
+            <button
+              class="btn small"
+              id="la-heal"
+              type="button"
+              title="Preenche os buracos transparentes que ficaram nesta camada com o fundo ao redor"
+            >
+              Tapar buracos
+            </button>
+            <button
+              class="btn small"
+              id="la-merge"
+              type="button"
+              title="Mesclar com a camada de baixo (Ctrl+E)"
+            >
+              Mesclar ↓
+            </button>
+            <button class="btn small danger" id="la-del" type="button" title="Excluir camada">Excluir</button>
+          </div>
+          <div class="props" id="layer-props" hidden>
+            <div class="field">
+              <label for="lp-opacity">Opacidade</label
+              ><input type="range" id="lp-opacity" min="0" max="100" value="100" /><output id="lp-opacity-v"
+                >100%</output
+              >
+            </div>
+            <div class="field full">
+              <label for="lp-blend">Mesclagem</label
+              ><select id="lp-blend"></select>
+            </div>
+            <details class="adj" id="lp-color" open>
+              <summary>Cor da camada</summary>
+              <label class="chk"
+                ><input type="checkbox" id="lp-fill-on" /> Cobrir tudo com uma cor (letras, logos)</label
+              >
+              <div class="color-row">
+                <input
+                  type="color"
+                  class="swatch"
+                  id="lp-fill-color"
+                  value="#000000"
+                  aria-label="Cor que cobre a camada"
+                />
+                <button
+                  class="btn small"
+                  type="button"
+                  id="lp-fill-pick"
+                  title="Clique aqui e depois na cor que quer copiar"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m13.5 6.5 4 4" />
+                    <path d="M16.9 3.1a2.1 2.1 0 0 1 3 0l1 1a2.1 2.1 0 0 1 0 3L18.6 9.4l-4-4z" />
+                    <path
+                      d="M14.6 5.4 4.8 15.2a2 2 0 0 0-.5.9L3.5 20.5l4.4-.8a2 2 0 0 0 .9-.5l9.8-9.8"
+                    /></svg
+                  >Conta-gotas
+                </button>
+                <button
+                  class="btn small"
+                  type="button"
+                  id="lp-fill-cur"
+                  title="Usar a cor atual do Pincel / Conta-gotas"
+                >
+                  Cor atual
+                </button>
+              </div>
+              <div class="field">
+                <label for="lp-fill-amt">Intensidade</label
+                ><input type="range" id="lp-fill-amt" min="0" max="100" value="100" /><output
+                  id="lp-fill-amt-v"
+                  >100%</output
+                >
+              </div>
+              <div class="sub-block">
+                <p class="mini-title">Tirar o fundo de uma cor</p>
+                <div class="color-row">
+                  <input
+                    type="color"
+                    class="swatch"
+                    id="lp-key-color"
+                    value="#ffffff"
+                    aria-label="Cor do fundo a tirar"
+                  />
+                  <button
+                    class="btn small"
+                    type="button"
+                    id="lp-key-pick"
+                    title="Clique aqui e depois no fundo"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="m13.5 6.5 4 4" />
+                      <path d="M16.9 3.1a2.1 2.1 0 0 1 3 0l1 1a2.1 2.1 0 0 1 0 3L18.6 9.4l-4-4z" />
+                      <path
+                        d="M14.6 5.4 4.8 15.2a2 2 0 0 0-.5.9L3.5 20.5l4.4-.8a2 2 0 0 0 .9-.5l9.8-9.8"
+                      /></svg
+                    >Conta-gotas
+                  </button>
+                  <button class="btn small primary" type="button" id="lp-key-apply">Tirar essa cor</button>
+                </div>
+                <div class="field">
+                  <label for="lp-key-tol">Limpeza</label
+                  ><input type="range" id="lp-key-tol" min="0" max="60" value="12" /><output id="lp-key-tol-v"
+                    >12%</output
+                  >
+                </div>
+                <p class="hint">
+                  Deixa essa cor transparente e mantém as bordas suaves. Letra em papel branco: tire o branco
+                  e depois cubra com a cor nova.
+                </p>
+              </div>
+            </details>
+            <details class="adj" id="lp-adj">
+              <summary>Ajustes de cor (sem estragar o original)</summary>
+              <div id="adj-body">
+                <div class="field">
+                  <label for="lp-b">Brilho</label
+                  ><input type="range" id="lp-b" min="0" max="200" value="100" /><output id="lp-b-v"
+                    >100%</output
+                  >
+                </div>
+                <div class="field">
+                  <label for="lp-c">Contraste</label
+                  ><input type="range" id="lp-c" min="0" max="200" value="100" /><output id="lp-c-v"
+                    >100%</output
+                  >
+                </div>
+                <div class="field">
+                  <label for="lp-s">Saturação</label
+                  ><input type="range" id="lp-s" min="0" max="200" value="100" /><output id="lp-s-v"
+                    >100%</output
+                  >
+                </div>
+                <div class="field">
+                  <label for="lp-h">Matiz</label
+                  ><input type="range" id="lp-h" min="-180" max="180" value="0" /><output id="lp-h-v"
+                    >0°</output
+                  >
+                </div>
+                <div class="field">
+                  <label for="lp-blur">Desfoque</label
+                  ><input type="range" id="lp-blur" min="0" max="40" step="0.5" value="0" /><output
+                    id="lp-blur-v"
+                    >0 px</output
+                  >
+                </div>
+                <button class="btn small" id="lp-adj-reset" type="button">Zerar ajustes</button>
+              </div>
+              <p class="note-off" id="adj-off" hidden>
+                Este navegador não aplica filtros no canvas. Use Chrome, Edge ou Firefox para os ajustes de
+                cor.
+              </p>
+            </details>
+          </div>
+        </section>
+      </aside>
+
+      <footer class="status" id="status">
+        <span id="st-pos">x — · y —</span>
+        <span id="st-doc">tela —</span>
+        <span id="st-sel"></span>
+        <span class="st-hint" id="st-hint"></span>
+      </footer>
+    </div>
+
+    <div class="modal" id="modal-canvas" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="mc-title">
+        <h3 id="mc-title">Tela</h3>
+        <p class="sub">Mudar o tamanho mantém o conteúdo centralizado.</p>
+        <div class="grid2">
+          <label>Largura (px)<input type="number" id="mc-w" min="1" max="12000" /></label>
+          <label>Altura (px)<input type="number" id="mc-h" min="1" max="12000" /></label>
+        </div>
+        <div class="stack">
+          <label class="lbl">Fundo</label>
+          <div class="radios" id="mc-bg">
+            <label><input type="radio" name="mc-bg" id="mc-bg-t" value="transparent" /> Transparente</label>
+            <label><input type="radio" name="mc-bg" id="mc-bg-w" value="#ffffff" /> Branco</label>
+            <label><input type="radio" name="mc-bg" id="mc-bg-k" value="#000000" /> Preto</label>
+            <label
+              ><input type="radio" name="mc-bg" id="mc-bg-c" value="custom" /> Cor
+              <input type="color" id="mc-color" value="#d9cbb4" aria-label="Escolher cor do fundo"
+            /></label>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn" id="mc-fit" type="button" title="A tela passa a ter o tamanho da camada ativa">
+            Ajustar à camada ativa
+          </button>
+          <div class="right">
+            <button class="btn" data-close type="button">Cancelar</button>
+            <button class="btn primary" id="mc-apply" type="button">Aplicar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="modal-export" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="me-title">
+        <h3 id="me-title">Exportar imagem</h3>
+        <p class="sub" id="me-sub">Junta todas as camadas visíveis num arquivo só.</p>
+        <div class="stack">
+          <label class="lbl"
+            >Nome do arquivo<input type="text" id="me-name" value="colagem" autocomplete="off"
+          /></label>
+          <div>
+            <label class="lbl" style="margin-bottom: 6px">Formato</label>
+            <div class="radios">
+              <label
+                ><input type="radio" name="me-fmt" id="me-png" value="png" checked /> PNG (mantém
+                transparência)</label
+              >
+              <label><input type="radio" name="me-fmt" id="me-jpg" value="jpg" /> JPG (arquivo menor)</label>
+            </div>
+          </div>
+          <div class="field" id="me-q-row" hidden>
+            <label for="me-q">Qualidade</label
+            ><input type="range" id="me-q" min="50" max="100" value="92" /><output id="me-q-v">92</output>
+          </div>
+          <div>
+            <label class="lbl" style="margin-bottom: 6px">Tamanho</label>
+            <div class="radios" id="me-scale">
+              <label
+                ><input type="radio" name="me-scale" value="0.5" id="me-s05" />
+                <span id="me-s05-t">50%</span></label
+              >
+              <label
+                ><input type="radio" name="me-scale" value="1" id="me-s1" checked />
+                <span id="me-s1-t">100%</span></label
+              >
+              <label
+                ><input type="radio" name="me-scale" value="2" id="me-s2" />
+                <span id="me-s2-t">200%</span></label
+              >
+            </div>
+          </div>
+        </div>
+        <div class="save-fallback" id="me-fallback" hidden>
+          <p class="hint">
+            Aqui o download direto não está disponível. Clique com o botão direito na imagem e escolha
+            <b>Salvar imagem como…</b> (no celular, toque e segure).
+          </p>
+          <img id="me-img" alt="Imagem exportada" />
+        </div>
+        <div class="modal-actions">
+          <div class="right">
+            <button class="btn" data-close type="button">Fechar</button>
+            <button class="btn primary" id="me-save" type="button">Salvar arquivo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="modal-about" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="ma-title">
+        <h3 id="ma-title">Ateliê de Colagem</h3>
+        <p class="sub" id="about-version">versão</p>
+        <p>
+          Editor de imagens grátis e sem cadastro. Tudo acontece no seu aparelho: suas fotos não são enviadas
+          para nenhum servidor.
+        </p>
+        <ul class="about-links">
+          <li><a href="./privacidade.html">Privacidade</a></li>
+          <li><a href="./termos.html">Termos de uso</a></li>
+          <li>
+            <a href="https://github.com/eliasneto072/atelie-de-colagem" target="_blank" rel="noopener"
+              >Código aberto no GitHub</a
+            >
+          </li>
+          <li>
+            <a href="https://github.com/eliasneto072/atelie-de-colagem/issues" target="_blank" rel="noopener"
+              >Relatar um problema ou sugerir uma ideia</a
+            >
+          </li>
+        </ul>
+        <p class="hint">
+          Feito pela
+          <a href="https://eliasneto072.github.io/vertice/" target="_blank" rel="noopener">Vértice</a> ·
+          licença MIT
+        </p>
+        <div class="modal-actions">
+          <div class="right">
+            <button class="btn primary" data-close type="button">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <noscript
+      ><p style="padding: 24px">O Ateliê de Colagem precisa de JavaScript ligado para funcionar.</p></noscript
+    >
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
