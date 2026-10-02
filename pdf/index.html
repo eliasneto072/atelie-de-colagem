@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Juntar, separar e organizar PDF grátis · Ateliê de Colagem</title>
+    <meta
+      name="description"
+      content="Junte PDFs, separe e reorganize páginas, gire, transforme fotos em PDF e PDF em imagem. Grátis, sem cadastro e sem enviar seus arquivos: tudo acontece no seu aparelho."
+    />
+    <link rel="canonical" href="https://ateliedecolagem.com.br/pdf/" />
+    <meta name="theme-color" content="#e6e9e3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141716" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Ateliê de Colagem" />
+    <meta property="og:title" content="Juntar, separar e organizar PDF grátis" />
+    <meta
+      property="og:description"
+      content="Junte PDFs, separe páginas, gire e transforme fotos em PDF. Grátis, sem cadastro e seus arquivos não saem do aparelho."
+    />
+    <meta property="og:url" content="https://ateliedecolagem.com.br/pdf/" />
+    <meta property="og:image" content="https://ateliedecolagem.com.br/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Ferramentas de PDF do Ateliê de Colagem",
+        "url": "https://ateliedecolagem.com.br/pdf/",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Qualquer navegador moderno",
+        "inLanguage": "pt-BR",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
+        "description": "Juntar PDFs, separar e reorganizar páginas, girar, fotos para PDF e PDF para imagem, direto no navegador e sem enviar os arquivos.",
+        "creator": {
+          "@type": "Organization",
+          "name": "Vértice",
+          "url": "https://eliasneto072.github.io/vertice/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="pdf-app">
+      <header class="top">
+        <div class="top-left">
+          <a class="brand" href="../" title="Voltar ao editor de imagens">
+            <img class="brand-mark" src="/favicon.svg" alt="" width="30" height="30" /><span
+              class="brand-name"
+              >Ateliê</span
+            ><span class="brand-sub">de colagem</span>
+          </a>
+          <nav class="switch" aria-label="Ferramentas">
+            <a href="../">Imagens</a>
+            <a href="./" aria-current="page">PDF</a>
+          </nav>
+        </div>
+        <button class="btn primary" id="add" type="button">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          <span>Adicionar</span><span class="only-desktop">arquivos</span>
+        </button>
+        <input type="file" id="file-input" accept="application/pdf,.pdf,image/*" multiple hidden />
+        <input type="file" id="camera-input" accept="image/*" capture="environment" hidden />
+      </header>
+
+      <nav class="tasks" aria-label="O que você quer fazer">
+        <button type="button" class="task" data-task="juntar">Juntar</button>
+        <button type="button" class="task" data-task="organizar">Organizar</button>
+        <button type="button" class="task" data-task="separar">Separar</button>
+        <button type="button" class="task" data-task="fotos">Fotos → PDF</button>
+        <button type="button" class="task" data-task="imagens">PDF → imagens</button>
+      </nav>
+
+      <main class="work">
+        <section class="board" id="board" aria-label="Páginas">
+          <div class="empty" id="empty">
+            <svg class="empty-art" viewBox="0 0 120 100" aria-hidden="true">
+              <rect
+                x="18"
+                y="14"
+                width="52"
+                height="68"
+                rx="6"
+                transform="rotate(-8 44 48)"
+                fill="var(--mat-line-strong)"
+              />
+              <rect
+                x="46"
+                y="10"
+                width="52"
+                height="68"
+                rx="6"
+                transform="rotate(6 72 44)"
+                fill="#fff"
+                opacity=".92"
+              />
+              <path
+                d="M60 30h26M60 40h26M60 50h18"
+                stroke="#9aa39b"
+                stroke-width="4"
+                stroke-linecap="round"
+                transform="rotate(6 72 44)"
+              />
+            </svg>
+            <h1>Juntar, separar e organizar PDF</h1>
+            <p class="empty-hint" id="empty-hint">
+              Arraste PDFs ou fotos para cá, ou escolha nos seus arquivos.
+            </p>
+            <div class="empty-actions">
+              <button class="btn primary big" id="empty-add" type="button">Escolher arquivos</button>
+              <button class="btn big only-touch" id="empty-camera" type="button">Tirar foto</button>
+            </div>
+            <p class="safe">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="5" y="11" width="14" height="10" rx="2" />
+                <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+              </svg>
+              Seus arquivos não são enviados para lugar nenhum: tudo acontece no seu aparelho.
+            </p>
+          </div>
+
+          <div class="toolbar" id="toolbar" hidden>
+            <span class="count" id="count"></span>
+            <div class="tb-group">
+              <button type="button" class="btn small" id="sel-all">Selecionar todas</button>
+              <button
+                type="button"
+                class="btn small icon"
+                id="sel-left"
+                title="Girar para a esquerda"
+                aria-label="Girar as selecionadas para a esquerda"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M4 9a8 8 0 1 1 2.3 5.7" />
+                  <path d="M4 4v5h5" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="btn small icon"
+                id="sel-right"
+                title="Girar para a direita"
+                aria-label="Girar as selecionadas para a direita"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M20 9a8 8 0 1 0-2.3 5.7" />
+                  <path d="M20 4v5h-5" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="btn small icon"
+                id="sel-back"
+                title="Mover para trás"
+                aria-label="Mover as selecionadas para trás"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="m15 6-6 6 6 6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="btn small icon"
+                id="sel-fwd"
+                title="Mover para frente"
+                aria-label="Mover as selecionadas para frente"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="m9 6 6 6-6 6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="btn small icon danger"
+                id="sel-del"
+                title="Tirar as selecionadas"
+                aria-label="Tirar as páginas selecionadas"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="btn small icon"
+                id="undo"
+                title="Desfazer (Ctrl+Z)"
+                aria-label="Desfazer"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M9 14 4 9l5-5" />
+                  <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div
+            class="pages"
+            id="pages"
+            role="listbox"
+            aria-multiselectable="true"
+            aria-label="Páginas na ordem do arquivo final"
+          ></div>
+        </section>
+
+        <aside class="panel" id="panel">
+          <div class="panel-body" id="panel-body"></div>
+          <div class="panel-foot">
+            <button type="button" class="btn panel-toggle" id="panel-toggle" aria-label="Mostrar opções">
+              Opções
+            </button>
+            <button type="button" class="btn primary big" id="primary" disabled>Baixar PDF</button>
+          </div>
+          <p class="privacy">Nada é enviado: os arquivos são processados no seu aparelho.</p>
+        </aside>
+      </main>
+
+      <footer class="foot">
+        <a href="../privacidade.html">Privacidade</a> · <a href="../termos.html">Termos</a> ·
+        <a href="https://github.com/eliasneto072/atelie-de-colagem" rel="noopener">Código aberto</a> · feito
+        pela
+        <a href="https://eliasneto072.github.io/vertice/" rel="noopener">Vértice</a>
+      </footer>
+    </div>
+
+    <div class="drop" id="drop" hidden><p>Solte para adicionar</p></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <dialog class="dialog" id="busy" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p id="busy-text">Trabalhando…</p>
+    </dialog>
+
+    <dialog class="dialog" id="pw-dialog">
+      <form method="dialog">
+        <h3>Este PDF tem senha</h3>
+        <p class="sub"><span id="pw-file"></span></p>
+        <p class="error" id="pw-wrong" hidden>Senha errada. Tente de novo.</p>
+        <label for="pw-input">Senha do arquivo</label>
+        <input type="password" id="pw-input" autocomplete="off" />
+        <p class="hint">
+          A senha só é usada aqui no seu aparelho para abrir o arquivo. O PDF que você baixar sai sem senha.
+        </p>
+        <div class="dialog-actions">
+          <button class="btn" value="cancel">Pular este arquivo</button>
+          <button class="btn primary" value="ok">Abrir</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="/src/pdf/main.ts"></script>
+  </body>
+</html>

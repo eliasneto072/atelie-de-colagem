@@ -11,6 +11,8 @@
  */
 const BUILD_ID = 'dev';
 const PRECACHE = /* precache */ ['./'];
+/** Files only the PDF tools use: cached when someone opens /pdf/, not on every visit. */
+const PDF_FILES = /* pdf-files */ [];
 const CACHE = `atelie-${BUILD_ID}`;
 
 self.addEventListener('install', (event) => {
@@ -31,6 +33,22 @@ self.addEventListener('activate', (event) => {
         Promise.all(keys.filter((k) => k.startsWith('atelie-') && k !== CACHE).map((k) => caches.delete(k))),
       )
       .then(() => self.clients.claim()),
+  );
+});
+
+// the PDF page asks for its files once it is controlled, so the tools also work offline
+self.addEventListener('message', (event) => {
+  if (event.data?.type !== 'cache-pdf') return;
+  event.waitUntil(
+    caches
+      .open(CACHE)
+      .then((cache) =>
+        Promise.all(
+          PDF_FILES.map((url) =>
+            cache.match(url).then((hit) => hit || cache.add(url).catch(() => undefined)),
+          ),
+        ),
+      ),
   );
 });
 

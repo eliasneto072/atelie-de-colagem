@@ -1,8 +1,8 @@
 {
   "name": "atelie-de-colagem",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Editor de imagens no navegador: recorte, cole, remova objetos e troque cores. Grátis, sem cadastro, e sua foto nunca sai do aparelho.",
+  "description": "Editor de imagens e ferramentas de PDF no navegador: recorte, cole, remova objetos, junte e separe PDFs. Grátis, sem cadastro, e os arquivos nunca saem do aparelho.",
   "license": "MIT",
   "author": "Vértice (https://eliasneto072.github.io/vertice/)",
   "homepage": "https://ateliedecolagem.com.br",
@@ -43,8 +43,11 @@
     "vitest": "^5.0.3"
   },
   "dependencies": {
+    "@cantoo/pdf-lib": "^2.11.1",
     "@fontsource/bricolage-grotesque": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
-    "@fontsource/instrument-sans": "^5.3.0"
+    "@fontsource/instrument-sans": "^5.3.0",
+    "fflate": "^0.8.3",
+    "pdfjs-dist": "^6.3.289"
   }
 }
