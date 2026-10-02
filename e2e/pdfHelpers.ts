@@ -13,7 +13,9 @@ export async function openPdfTools(page: Page, task = 'juntar'): Promise<void> {
 
 export async function addFiles(page: Page, names: string[], expectedPages: number): Promise<void> {
   await page.locator('#file-input').setInputFiles(names.map(fixture));
-  await expect(page.locator('.card')).toHaveCount(expectedPages);
+  // the editor shows big pages instead of cards
+  const editing = (await page.evaluate(() => location.hash)) === '#editar';
+  await expect(page.locator(editing ? '.vpage' : '.card')).toHaveCount(expectedPages);
 }
 
 /** Click the main button and return the downloaded file. */
@@ -54,4 +56,56 @@ export async function dragCard(page: Page, from: number, to: number): Promise<vo
   await page.mouse.move(a.x + a.width / 2 - 20, a.y + a.height / 2, { steps: 4 });
   await page.mouse.move(b.x + b.width * 0.25, b.y + b.height / 2, { steps: 12 });
   await page.mouse.up();
+}
+
+/** Text of every page as pdf.js reads it (an independent reader), with positions on screen. */
+export async function readText(bytes: Uint8Array) {
+  const { getDocument } = await import('pdfjs-dist/legacy/build/pdf.mjs');
+  const fonts = resolve(import.meta.dirname, '../node_modules/pdfjs-dist/standard_fonts/') + '/';
+  const doc = await getDocument({ data: bytes.slice(), standardFontDataUrl: fonts }).promise;
+  const pages: {
+    items: { str: string; sx: number; sy: number; dx: number; dy: number; size: number }[];
+    images: number;
+  }[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const p = await doc.getPage(i);
+    const vp = p.getViewport({ scale: 1 });
+    const tc = await p.getTextContent();
+    const items = [];
+    for (const it of tc.items) {
+      if (!('str' in it) || !it.str) continue;
+      const [a, b, , , e, f] = it.transform as number[];
+      const [sx, sy] = vp.convertToViewportPoint(e, f);
+      const size = Math.hypot(a, b);
+      // one point along the text's baseline, on screen: (1, 0) when it reads left to right
+      const [tx, ty] = vp.convertToViewportPoint(e + a / size, f + b / size);
+      items.push({ str: it.str, sx, sy, dx: tx - sx, dy: ty - sy, size });
+    }
+    const ops = await p.getOperatorList();
+    const { OPS } = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    const images = ops.fnArray.filter(
+      (fn) => fn === OPS.paintImageXObject || fn === OPS.paintInlineImageXObject,
+    ).length;
+    pages.push({ items, images });
+  }
+  return pages;
+}
+
+/** Point on the first page sheet of the editor, in CSS pixels from its top-left. */
+export async function sheetPoint(page: Page, x: number, y: number, index = 0) {
+  const b = (await page.locator('.vsheet').nth(index).boundingBox())!;
+  return { x: b.x + x, y: b.y + y, box: b };
+}
+
+/** Draw a wavy signature in the pad and accept it. */
+export async function drawSignature(page: Page): Promise<void> {
+  await expect(page.locator('#sig-dialog')).toBeVisible();
+  const c = (await page.locator('#sig-canvas').boundingBox())!;
+  await page.mouse.move(c.x + 40, c.y + c.height * 0.6);
+  await page.mouse.down();
+  for (let i = 1; i <= 30; i++)
+    await page.mouse.move(c.x + 40 + i * 12, c.y + c.height * (0.6 - 0.25 * Math.sin(i / 3)));
+  await page.mouse.up();
+  await page.locator('#sig-dialog button[value=ok]').click();
+  await expect(page.locator('#sig-dialog')).toBeHidden();
 }
