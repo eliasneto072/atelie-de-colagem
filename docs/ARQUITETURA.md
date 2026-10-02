@@ -132,6 +132,44 @@ uma lupa e pega a cor ao soltar.
 Só arquivos do próprio aplicativo passam pelo cache. Imagens abertas pelo usuário são lidas direto
 do aparelho para a memória.
 
+## Ferramentas de PDF (`/pdf/`)
+
+Uma página própria (`pdf/index.html`, código em `src/pdf/`), com o mesmo visual e sem depender
+do editor de imagens.
+
+| Arquivo              | O que faz                                                                              |
+| -------------------- | -------------------------------------------------------------------------------------- |
+| `src/pdf/state.ts`   | Arquivos abertos, páginas na ordem atual, tarefa escolhida e o desfazer.               |
+| `src/pdf/sources.ts` | Abre PDFs (pedindo senha quando preciso) e fotos (já em pé, pelo EXIF).                |
+| `src/pdf/pdfjs.ts`   | Carrega o pdf.js só quando o primeiro PDF é aberto.                                    |
+| `src/pdf/thumbs.ts`  | Miniaturas desenhadas só quando o cartão aparece na tela, guardadas como JPEG pequeno. |
+| `src/pdf/grid.ts`    | A grade de cartões: seleção, girar, tirar, arrastar (no toque: segurar e arrastar).    |
+| `src/pdf/panel.ts`   | O painel de cada tarefa e o botão que gera o arquivo.                                  |
+| `src/pdf/actions.ts` | Gera o PDF, as partes e as imagens, e entrega o download.                              |
+| `src/pdf/build.ts`   | Monta os PDFs com pdf-lib. Roda também no Node, para os testes.                        |
+| `src/core/pages.ts`  | Funções puras: intervalos digitados (`1-3, 5`), tamanho de página, encaixe da foto.    |
+
+Decisões:
+
+- **Duas bibliotecas, cada uma no que faz melhor.** O [pdf.js](https://mozilla.github.io/pdf.js/)
+  (Mozilla, Apache 2.0) desenha as páginas. O [pdf-lib](https://github.com/cantoo-scribe/pdf-lib)
+  (fork mantido `@cantoo/pdf-lib`, MIT) copia páginas entre arquivos sem mexer no conteúdo:
+  texto continua texto e o arquivo não perde qualidade. Ele também abre arquivos com senha.
+- **Build legado do pdf.js:** o build moderno só funciona nas últimas versões do Chrome e do
+  Firefox; o legado também cobre o Safari do iPhone.
+- **Cada arquivo de origem é aberto uma vez por download**, e as páginas de um mesmo arquivo são
+  copiadas numa chamada só. Assim fontes e imagens compartilhadas não se repetem no resultado, e
+  separar um PDF longo em centenas de arquivos continua rápido.
+- **Fotos são recodificadas na hora de gerar:** em pé, com fundo branco onde era transparente, e
+  reduzidas (até 2000 px no lado maior) na qualidade normal.
+- **Carregamento sob demanda:** a página abre com ~30 kB de código. O pdf.js (~490 kB e um worker
+  de ~1,3 MB) carrega ao abrir o primeiro PDF; o pdf-lib (~570 kB) ao gerar o primeiro arquivo.
+- **Sem internet:** esses arquivos ficam fora do pré-cache do editor (quem só edita imagens não
+  baixa nada de PDF). Ao abrir `/pdf/`, a página pede ao service worker (mensagem `cache-pdf`)
+  para guardar a lista de arquivos de PDF que o build escreveu nele. Os decodificadores de imagens
+  escaneadas e as fontes padrão do pdf.js (`/pdfjs/`) são baixados e guardados só quando um PDF
+  precisa deles.
+
 ## Regra de importação
 
 Os módulos de `editor/` e `ui/` dependem uns dos outros em ciclo (a ferramenta chama o painel,
@@ -146,10 +184,12 @@ importação** usando um módulo que talvez ainda não tenha terminado de carreg
 ## Testes
 
 - **Unitários** (`tests/`, Vitest): tudo de `src/core/`, incluindo o preenchimento com semente
-  fixa.
+  fixa, e a montagem de PDFs (`src/pdf/build.ts`): ordem, giro, fotos, partes e senhas.
 - **Navegador** (`e2e/`, Playwright): rodam no build de produção, num computador e num celular
   simulado. Cobrem abrir, selecionar, mover, esticar, alinhar, remover objeto, exportar e o modo
-  sem internet. O teste sem internet derruba um servidor próprio em vez de usar a emulação de
+  sem internet, e todas as tarefas de PDF, conferindo os arquivos baixados com o pdf-lib (ordem,
+  tamanho e giro de cada página, conteúdo dos ZIPs). Os arquivos de exemplo ficam em
+  `e2e/fixtures/`. O teste sem internet derruba um servidor próprio em vez de usar a emulação de
   "offline" do navegador, porque ela também bloqueia o que o service worker responderia do cache.
 
 ## Decisões

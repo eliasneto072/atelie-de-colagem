@@ -3,9 +3,9 @@
 [![CI](https://github.com/eliasneto072/atelie-de-colagem/actions/workflows/ci.yml/badge.svg)](https://github.com/eliasneto072/atelie-de-colagem/actions/workflows/ci.yml)
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-f2b13f)](LICENSE)
 
-Editor de imagens no navegador para recortar, colar e juntar imagens, remover letras e objetos
-refazendo o fundo e trocar cores. **Grátis, sem cadastro, sem marca d'água**, e a foto nunca sai
-do aparelho de quem usa.
+Editor de imagens e ferramentas de PDF no navegador: recorte, cole e junte imagens, remova
+letras e objetos refazendo o fundo, troque cores, e junte, separe e organize PDFs. **Grátis, sem
+cadastro, sem marca d'água**, e os arquivos nunca saem do aparelho de quem usa.
 
 **Abrir o editor:** [ateliedecolagem.com.br](https://ateliedecolagem.com.br) · também em
 [eliasneto072.github.io/atelie-de-colagem](https://eliasneto072.github.io/atelie-de-colagem/)
@@ -32,11 +32,20 @@ do aparelho de quem usa.
 - **Funciona no celular** (painel em gaveta, gestos de pinça, dois dedos para desfazer) e
   **sem internet** depois da primeira visita, podendo ser instalado como aplicativo.
 
+### PDF ([ateliedecolagem.com.br/pdf](https://ateliedecolagem.com.br/pdf/))
+
+- **Juntar** PDFs e fotos em um arquivo só.
+- **Organizar** páginas: arrastar para mudar a ordem, girar, tirar, desfazer.
+- **Separar:** só as páginas escolhidas, uma página por arquivo ou partes por intervalo.
+- **Fotos → PDF** em A4, Carta ou no tamanho da foto; no celular, direto da câmera.
+- **PDF → imagens** em JPG ou PNG.
+- Abre **PDF com senha** (com a senha do arquivo) e baixa sem senha.
+
 O passo a passo de cada ferramenta e os atalhos estão no [Guia de uso](docs/GUIA.md).
 
 ## Privacidade
 
-Todo o processamento acontece no navegador. Não há servidor que receba imagens, não há contas,
+Todo o processamento acontece no navegador. Não há servidor que receba imagens ou PDFs, não há contas,
 anúncios, cookies de rastreamento nem serviços de terceiros (as fontes são servidas pelo próprio
 site). Detalhes em [privacidade.html](privacidade.html).
 
@@ -78,15 +87,17 @@ Antes do primeiro `npm run test:e2e`, instale o navegador de testes com
 
 ```
 src/
-  core/        matemática pura, sem DOM e com testes: cores, máscaras, guias, preenchimento
+  core/        matemática pura, sem DOM e com testes: cores, máscaras, guias, preenchimento, páginas
   editor/      estado, camadas, histórico, ferramentas, seleção, desenho na tela
   ui/          painéis, janelas e avisos
   workers/     preenchimento do fundo rodando fora da página
+  pdf/         ferramentas de PDF (página /pdf/)
   styles/      tokens de cor e estilos
   main.ts      ponto de entrada
 public/        ícones, manifest, service worker, robots e sitemap
+pdf/           página das ferramentas de PDF
 tests/         testes unitários
-e2e/           testes no navegador (computador e celular)
+e2e/           testes no navegador (computador e celular) e arquivos de exemplo
 docs/          guia, arquitetura, publicação e planos
 ```
 

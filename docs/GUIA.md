@@ -107,6 +107,48 @@ esconder e dê dois cliques no nome para renomear. Para a camada ativa:
 - **Ajustes de cor:** brilho, contraste, saturação, matiz e desfoque, sem estragar o original.
   **Zerar ajustes** volta ao normal.
 
+## Ferramentas de PDF
+
+Em **ateliedecolagem.com.br/pdf** (ou no botão **PDF** ao lado do nome, no topo do editor) ficam
+as ferramentas de PDF. Como no editor, nada é enviado: os arquivos são lidos e montados no seu
+aparelho.
+
+1. Escolha o que quer fazer na fileira de cima: **Juntar**, **Organizar**, **Separar**,
+   **Fotos → PDF** ou **PDF → imagens**.
+2. Abra os arquivos: botão **Adicionar**, arrastando para a página ou colando (Ctrl+V). PDFs e
+   fotos podem ser misturados.
+3. Cada página aparece como um cartão, na ordem em que vai sair.
+4. O botão grande do painel gera o arquivo.
+
+### Mexendo nas páginas
+
+- **Clique** seleciona (Shift+clique pega um intervalo). **Esc** limpa a seleção.
+- **Arraste** um cartão para mudar a ordem. No celular, segure a página um instante e então
+  arraste; um deslize rápido só rola a tela.
+- A barra de cima gira, move para trás ou para frente e tira as páginas selecionadas.
+  **Desfazer** (Ctrl+Z) volta o último passo.
+- No computador, cada cartão também tem botões para girar e tirar a página.
+- Teclado: **R** gira, **Delete** tira, **Ctrl+setas** movem a página, **Ctrl+A** seleciona
+  todas.
+
+### Cada tarefa
+
+- **Juntar:** as páginas saem na ordem da grade. A lista de arquivos no painel move um arquivo
+  inteiro para cima ou para baixo, ou tira o arquivo.
+- **Organizar:** gire, tire e reordene, e baixe o PDF arrumado.
+- **Separar:** só as páginas escolhidas (clicando ou digitando, como `1-3, 5`), cada página em
+  um PDF ou em partes por intervalos (`1-3, 4-10, 11-`). Mais de um arquivo vem num ZIP.
+- **Fotos → PDF:** tamanho da página A4, Carta ou igual à foto, com ou sem margem, e qualidade
+  normal (arquivo menor) ou alta. Fotos tiradas de lado ficam em pé sozinhas. No celular, o
+  botão **Tirar foto** abre a câmera.
+- **PDF → imagens:** JPG ou PNG, em 150 ou 300 dpi, de todas as páginas ou só das selecionadas.
+
+### PDF com senha
+
+Se o arquivo pedir senha, digite a senha dele. Ela só é usada no seu aparelho para abrir o
+arquivo, e o PDF que você baixar sai **sem senha**. Arquivos protegidos apenas contra alteração
+abrem direto, sem perguntar.
+
 ## Atalhos de teclado
 
 No Mac, use **Cmd** no lugar de **Ctrl**.

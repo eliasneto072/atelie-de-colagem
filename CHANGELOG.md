@@ -6,6 +6,24 @@ Todas as mudanças relevantes ficam registradas aqui. O formato segue o
 
 ## [Não lançado]
 
+## [0.2.0] - 2026-10-02
+
+Ferramentas de PDF, em `/pdf/`.
+
+### Adicionado
+
+- Juntar PDFs e fotos, com a lista de arquivos para mudar a ordem de um arquivo inteiro.
+- Organizar páginas: arrastar para reordenar (no celular, segurar e arrastar), girar, tirar,
+  mover as selecionadas e desfazer.
+- Separar: páginas escolhidas (clicando ou digitando `1-3, 5`), uma página por arquivo ou partes
+  por intervalo, em ZIP quando há mais de um arquivo.
+- Fotos para PDF em A4, Carta ou no tamanho da foto, com margem e qualidade à escolha; fotos de
+  lado ficam em pé; botão para tirar foto no celular.
+- PDF para imagens em JPG ou PNG, 150 ou 300 dpi.
+- Abrir PDF com senha (a senha só é usada no aparelho) e baixar sem senha.
+- As ferramentas de PDF funcionam sem internet depois da primeira visita.
+- Botão "Imagens | PDF" no topo do editor e link na janela Sobre.
+
 ## [0.1.0] - 2026-10-01
 
 Primeira versão pública.
@@ -31,5 +49,6 @@ Primeira versão pública.
 - Funciona sem internet depois da primeira visita e pode ser instalado como aplicativo.
 - Páginas de privacidade e termos de uso.
 
-[Não lançado]: https://github.com/eliasneto072/atelie-de-colagem/compare/v0.1.0...HEAD
+[Não lançado]: https://github.com/eliasneto072/atelie-de-colagem/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/eliasneto072/atelie-de-colagem/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/eliasneto072/atelie-de-colagem/releases/tag/v0.1.0
