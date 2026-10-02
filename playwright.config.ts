@@ -24,12 +24,12 @@ export default defineConfig({
   projects: [
     {
       name: 'desktop',
-      testMatch: 'desktop.spec.ts',
+      testMatch: ['desktop.spec.ts', 'pdf.spec.ts'],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1360, height: 820 } },
     },
     {
       name: 'celular',
-      testMatch: 'celular.spec.ts',
+      testMatch: ['celular.spec.ts', 'pdf-celular.spec.ts'],
       use: { ...devices['Pixel 7'], launchOptions: { executablePath } },
     },
   ],
