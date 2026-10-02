@@ -499,6 +499,456 @@ body.is-dragging * {
   cursor: grabbing !important;
 }
 
+.card.has-edits .card-meta .num::after {
+  content: ' ✎';
+  color: #f2b13f;
+}
+
+/* ---------- editor: tools ---------- */
+.edit-toolbar {
+  padding: 8px 10px;
+}
+.tools-row {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  max-width: 100%;
+}
+.tools-row::-webkit-scrollbar {
+  display: none;
+}
+.tool {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 58px;
+  height: 52px;
+  padding: 4px 6px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #eef2ec;
+  cursor: pointer;
+  font-size: 11.5px;
+  font-weight: 500;
+}
+.tool svg {
+  width: 21px;
+  height: 21px;
+}
+.tool:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+}
+.tool[aria-pressed='true'],
+.tool[aria-pressed='true']:hover:not(:disabled) {
+  background: #f2b13f;
+  color: #201605;
+  font-weight: 700;
+}
+.zoom-val {
+  align-self: center;
+  min-width: 46px;
+  text-align: center;
+  color: #eef2ec;
+  font: 500 12px var(--f-mono);
+}
+.tool.compact {
+  min-width: 40px;
+}
+.tool:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.tool-sep {
+  flex: none;
+  width: 1px;
+  margin: 6px 3px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ---------- editor: pages ---------- */
+.viewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  padding: 18px 12px 40px;
+}
+.vpage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.vlabel {
+  font-size: 12px;
+  color: rgba(238, 242, 236, 0.75);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vsheet {
+  position: relative;
+  background: #fff;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 10px 30px rgba(0, 0, 0, 0.28);
+}
+.vsheet canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.vpage.broken .vsheet::after {
+  content: 'Não deu para mostrar esta página';
+  position: absolute;
+  inset: 45% 0 auto;
+  text-align: center;
+  color: #555;
+}
+.layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: pan-x pan-y pinch-zoom;
+  cursor: default;
+}
+body[data-tool='text'] .layer {
+  cursor: text;
+}
+body[data-tool='sign'] .layer,
+body[data-tool='check'] .layer,
+body[data-tool='x'] .layer,
+body[data-tool='dot'] .layer,
+body[data-tool='cover'] .layer,
+body[data-tool='redact'] .layer,
+body[data-tool='highlight'] .layer {
+  cursor: crosshair;
+}
+/* drawing boxes with a finger: the page doesn't scroll under it */
+body[data-tool='cover'] .layer,
+body[data-tool='redact'] .layer,
+body[data-tool='highlight'] .layer {
+  touch-action: none;
+}
+.edit {
+  position: absolute;
+  transform-origin: 0 0;
+  touch-action: none;
+  cursor: move;
+  outline: 1.5px dashed transparent;
+  outline-offset: 2px;
+}
+.edit:hover {
+  outline-color: rgba(26, 111, 214, 0.55);
+}
+.edit.sel {
+  outline: 2px solid #1a6fd6;
+}
+.edit.text {
+  font-family: 'AtelieSans', 'Liberation Sans', Arial, Helvetica, sans-serif;
+  white-space: pre;
+  min-width: 4px;
+  min-height: 1em;
+}
+.edit.text .t {
+  display: block;
+  outline: none;
+  min-width: 2px;
+}
+.edit.text.editing {
+  cursor: text;
+  outline: 2px solid #1a6fd6;
+  background: rgba(26, 111, 214, 0.06);
+}
+.edit.image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.edit.mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.edit.rect.cover {
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.12);
+}
+.edit.rect.highlight {
+  mix-blend-mode: multiply;
+  opacity: 0.45;
+}
+.edit.rect.redact {
+  background: #000;
+}
+.edit-del {
+  display: none;
+  position: absolute;
+  top: -13px;
+  right: -13px;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: #1a6fd6;
+  color: #fff;
+  font: 700 16px/1 var(--f-ui);
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+.edit-resize {
+  display: none;
+  position: absolute;
+  right: -8px;
+  bottom: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: #fff;
+  border: 2px solid #1a6fd6;
+  cursor: nwse-resize;
+}
+.edit.sel:not(.editing) .edit-del,
+.edit.sel .edit-resize {
+  display: block;
+}
+@media (pointer: coarse) {
+  .edit-del {
+    width: 30px;
+    height: 30px;
+    top: -17px;
+    right: -17px;
+  }
+  .edit-resize {
+    width: 22px;
+    height: 22px;
+    right: -11px;
+    bottom: -11px;
+  }
+}
+
+.wm-preview {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  white-space: nowrap;
+  font-family: 'AtelieSans', Arial, sans-serif;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+}
+.nb-preview {
+  position: absolute;
+  white-space: nowrap;
+  font-family: 'AtelieSans', Arial, sans-serif;
+  line-height: 1.2;
+  color: #333;
+  pointer-events: none;
+}
+
+/* ---------- editor: panel ---------- */
+.tool-hint {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: var(--accent-soft);
+  font-size: 13px;
+}
+.note {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  color: var(--accent);
+  font-weight: 600;
+}
+.sel-opts {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--raise);
+}
+.size-row {
+  align-items: center;
+  flex-wrap: wrap;
+}
+.size-val {
+  min-width: 46px;
+  text-align: center;
+  font: 500 13px var(--f-mono);
+}
+.btn.on {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.ed-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.swatches {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.swatches label {
+  cursor: pointer;
+}
+.swatches input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.swatches i {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--c);
+  border: 2px solid var(--line);
+}
+.swatches label:has(input:checked) i {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.swatches label:has(input:focus-visible) i {
+  outline: 2px solid var(--fg);
+}
+.sigs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.sig {
+  width: 92px;
+  height: 46px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+.sig img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.sig.on {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.chk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.chk input {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+.sub-opts {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+.opt-sub {
+  margin: 2px 0 -2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.sub-opts .chk {
+  font-weight: 400;
+}
+.lbl {
+  align-self: center;
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+input[type='number'] {
+  width: 90px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--raise);
+}
+
+/* ---------- signature pad ---------- */
+.sig-dialog {
+  width: min(94vw, 620px);
+  max-width: none;
+}
+.sig-modes {
+  display: flex;
+  gap: 6px;
+  margin: 4px 0 12px;
+}
+.sig-modes .btn[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+.sig-pad {
+  position: relative;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+#sig-canvas {
+  display: block;
+  width: 100%;
+  height: clamp(150px, 34vw, 230px);
+  touch-action: none;
+  cursor: crosshair;
+}
+.sig-hint {
+  position: absolute;
+  inset: 40% 0 auto;
+  margin: 0;
+  text-align: center;
+  color: #9aa09b;
+  pointer-events: none;
+}
+.sig-line {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 26%;
+  border-bottom: 1px solid #d5d9d4;
+  pointer-events: none;
+}
+.sig-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.sig-ink {
+  min-width: 160px;
+}
+.sig-photo {
+  margin-top: 10px;
+}
+.sig-photo .btn {
+  cursor: pointer;
+}
+
 /* ---------- side panel ---------- */
 .panel {
   display: flex;
@@ -885,6 +1335,14 @@ input[type='password']:focus {
   }
   .toast {
     bottom: 92px;
+  }
+  .tool {
+    min-width: 54px;
+    height: 50px;
+  }
+  .viewer {
+    padding: 12px 6px 30px;
+    gap: 16px;
   }
 }
 @media (max-width: 380px) {

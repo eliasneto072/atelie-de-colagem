@@ -1,4 +1,5 @@
 /** Opening files: PDFs (asking for a password when needed) and photos. */
+import { normalizeRotation } from '../core/pages';
 import { NeedsPassword, openPdf } from './pdfjs';
 import { newId, nextColor, st, type ImageFile, type Page, type PdfFile } from './state';
 import { askPassword, busy, plural, toast } from './ui';
@@ -48,7 +49,9 @@ export async function addFiles(list: FileList | File[], at = st.pages.length): P
             }
             st.files.push(pdf);
             for (let i = 0; i < pdf.doc.numPages; i++) {
-              const vp = (await pdf.doc.getPage(i + 1)).getViewport({ scale: 1 });
+              const pg = await pdf.doc.getPage(i + 1);
+              const vp = pg.getViewport({ scale: 1 });
+              const [x0, y0, x1, y1] = pg.view;
               added.push({
                 id: newId(),
                 source: pdf,
@@ -57,6 +60,9 @@ export async function addFiles(list: FileList | File[], at = st.pages.length): P
                 h: vp.height,
                 rotation: 0,
                 selected: false,
+                box: [x0, y0, x1, y1],
+                baseRot: normalizeRotation(pg.rotate),
+                edits: [],
               });
             }
           } else if (isImage(file)) {
@@ -70,6 +76,8 @@ export async function addFiles(list: FileList | File[], at = st.pages.length): P
               h: img.bitmap.height,
               rotation: 0,
               selected: false,
+              baseRot: 0,
+              edits: [],
             });
           } else {
             problems.push(`${file.name} não é PDF nem imagem.`);

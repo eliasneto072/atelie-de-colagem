@@ -99,6 +99,7 @@ export function renderGrid(): void {
     if (root.children[i] !== card) root.insertBefore(card, root.children[i] ?? null);
     card.querySelector('.num')!.textContent = String(i + 1);
     card.classList.toggle('selected', page.selected);
+    card.classList.toggle('has-edits', page.edits.length > 0);
     card.setAttribute('aria-selected', String(page.selected));
     card.setAttribute(
       'aria-label',

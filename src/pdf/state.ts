@@ -1,8 +1,12 @@
 /** What is open on the PDF page: the files, their pages in the current order, the task. */
 import type { PDFDocumentProxy } from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { normalizeRotation, type Rot } from '../core/pages';
+import type { Edit, Numbering, Signature, Watermark } from './edits';
 
-export type Task = 'juntar' | 'organizar' | 'separar' | 'fotos' | 'imagens';
-export const TASKS: readonly Task[] = ['juntar', 'organizar', 'separar', 'fotos', 'imagens'];
+export type Task = 'juntar' | 'organizar' | 'editar' | 'separar' | 'fotos' | 'imagens';
+export const TASKS: readonly Task[] = ['juntar', 'organizar', 'editar', 'separar', 'fotos', 'imagens'];
+
+export type Tool = 'select' | 'text' | 'sign' | 'check' | 'x' | 'dot' | 'cover' | 'redact' | 'highlight';
 
 interface SourceBase {
   id: number;
@@ -39,7 +43,15 @@ export interface Page {
   selected: boolean;
   /** Object URL of the thumbnail, once rendered. */
   thumb?: string;
+  /** PDF pages: the visible box [x0, y0, x1, y1] and the page's own rotation. */
+  box?: [number, number, number, number];
+  baseRot: Rot;
+  /** Text, signatures and boxes written over the page. */
+  edits: Edit[];
 }
+
+/** How a page is shown: its final rotation. */
+export const pageRot = (p: Page): Rot => normalizeRotation(p.baseRot + p.rotation);
 
 const COLORS = ['#f2b13f', '#5fb6a0', '#e0795f', '#8c9cf0', '#d58ad8', '#9cc95c', '#5aa8e6', '#e6c35a'];
 
@@ -49,7 +61,28 @@ export const st = {
   pages: [] as Page[],
   /** Last page clicked without Shift, for range selection. */
   anchor: null as number | null,
+  // ---- editing ----
+  tool: 'select' as Tool,
+  /** The edit with the selection outline, if any. */
+  current: null as { page: Page; edit: Edit } | null,
+  signatures: [] as Signature[],
+  /** Signature the "Assinatura" tool places. */
+  signature: null as Signature | null,
+  watermark: { on: false, text: 'CÓPIA', opacity: 0.18, color: '#7a7a7a' } as Watermark & { on: boolean },
+  numbering: {
+    on: false,
+    format: 'n/N',
+    position: 'bottom-center',
+    start: 1,
+    skipFirst: false,
+    size: 10,
+  } as Numbering & {
+    on: boolean;
+  },
 };
+
+export const hasEdits = (): boolean => st.pages.some((p) => p.edits.length > 0);
+export const hasPageWideEdits = (): boolean => st.watermark.on || st.numbering.on;
 
 let nextId = 1;
 export const newId = (): number => nextId++;
@@ -59,22 +92,26 @@ export const selectedPages = (): Page[] => st.pages.filter((p) => p.selected);
 export const hasPdf = (): boolean => st.files.some((f) => f.kind === 'pdf');
 export const hasImages = (): boolean => st.pages.some((p) => p.source.kind === 'image');
 
-// ---- undo: snapshots of the page list (order, rotation) ----
-type Snapshot = { page: Page; rotation: Page['rotation'] }[];
+// ---- undo: snapshots of the page list (order, rotation, edits) ----
+type Snapshot = { page: Page; rotation: Page['rotation']; edits: Edit[] }[];
 const undoStack: Snapshot[] = [];
 
 export function remember(): void {
-  undoStack.push(st.pages.map((page) => ({ page, rotation: page.rotation })));
-  if (undoStack.length > 60) undoStack.shift();
+  undoStack.push(
+    st.pages.map((page) => ({ page, rotation: page.rotation, edits: page.edits.map((e) => ({ ...e })) })),
+  );
+  if (undoStack.length > 80) undoStack.shift();
 }
 
 export function undo(): boolean {
   const snap = undoStack.pop();
   if (!snap) return false;
-  st.pages = snap.map(({ page, rotation }) => {
+  st.pages = snap.map(({ page, rotation, edits }) => {
     page.rotation = rotation;
+    page.edits = edits;
     return page;
   });
+  st.current = null;
   return true;
 }
 

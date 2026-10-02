@@ -24,6 +24,7 @@ const PUBLIC_OFFLINE = [
  * to keep them (see the 'cache-pdf' message in public/sw.js).
  */
 const PDF_ONLY = /^(assets\/pdf\/|pdfjs\/|pdf\/)/;
+const EDITOR_FONTS = /^pdfjs\/standard_fonts\/LiberationSans-(Regular|Bold)\.ttf$/;
 
 /**
  * Writes the list of built files and a build id into dist/sw.js, so the service worker
@@ -45,8 +46,10 @@ function serviceWorkerManifest(): Plugin {
         // every browser that runs the editor reads woff2; plain woff stays a runtime fallback
         if (name.endsWith('.woff') || name === 'index.html') continue;
         if (!PDF_ONLY.test(name)) files.push(name);
-        // pdf.js's decoders and fonts are fetched (and then kept) only by PDFs that need them
-        else if (!name.startsWith('pdfjs/')) pdfFiles.push(name === 'pdf/index.html' ? 'pdf/' : name);
+        // pdf.js's decoders and fonts are fetched (and then kept) only by PDFs that need them,
+        // except the Helvetica look-alikes the editor writes with
+        else if (!name.startsWith('pdfjs/') || EDITOR_FONTS.test(name))
+          pdfFiles.push(name === 'pdf/index.html' ? 'pdf/' : name);
       }
       const buildId = `${pkg.version}-${hash.digest('hex').slice(0, 10)}`;
       const rel = (f: string) => (f.startsWith('./') ? f : `./${f}`);

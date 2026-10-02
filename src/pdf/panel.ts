@@ -1,9 +1,11 @@
 /** The side panel: what the chosen task does, its options, and the button that makes the file. */
 import { baseName, describePages, pagesIn, parseRanges } from '../core/pages';
-import { opts, saveImages, saveOpts, saveParts, savePdf } from './actions';
+import { saveImages, saveParts, savePdf } from './actions';
+import { opts, saveOpts } from './options';
 import { selectAll } from './grid';
+import { editBody, editKey, initEditPanel } from './editPanel';
 import { moveFile, removeFile } from './sources';
-import { hasImages, selectedPages, st, type Page, type Task } from './state';
+import { hasEdits, hasImages, hasPageWideEdits, selectedPages, st, type Page, type Task } from './state';
 import { $, plural, toast } from './ui';
 
 type SplitMode = 'selecionadas' | 'cada' | 'partes';
@@ -22,6 +24,10 @@ const TITLES: Record<Task, { title: string; text: string }> = {
   organizar: {
     title: 'Organizar páginas',
     text: 'Arraste para mudar a ordem, gire e tire páginas. Depois baixe o PDF arrumado.',
+  },
+  editar: {
+    title: 'Editar e assinar',
+    text: 'Escolha uma ferramenta na barra de cima e clique na página: escreva, assine, marque caixinhas, cubra ou esconda dados.',
   },
   separar: {
     title: 'Separar PDF',
@@ -90,6 +96,15 @@ function filesList(): string {
 function body(task: Task): string {
   const t = TITLES[task];
   let h = `<h2>${t.title}</h2><p class="lead">${t.text}</p>`;
+  if (task === 'editar') {
+    return (
+      h +
+      editBody() +
+      `<div class="opt"><label class="opt-title" for="o-name">Nome do arquivo</label><input type="text" id="o-name" autocomplete="off" spellcheck="false" /></div>`
+    );
+  }
+  if (hasEdits() || hasPageWideEdits())
+    h += `<p class="note">Suas edições (textos, assinaturas, tarjas, marca d'água e números) entram no arquivo.</p>`;
   if (task === 'juntar') h += filesList();
   if (task === 'organizar')
     h += `<ul class="tips"><li>Clique para selecionar; Shift+clique pega um intervalo.</li><li>No celular, segure a página um instante e arraste.</li><li>Teclado: R gira, Delete tira, Ctrl+setas movem, Ctrl+Z desfaz.</li></ul>`;
@@ -135,6 +150,7 @@ function suggestedName(task: Task): string {
   const base = firstName();
   if (task === 'juntar') return st.files.length > 1 ? `${base}-juntado` : base;
   if (task === 'organizar') return `${base}-organizado`;
+  if (task === 'editar') return `${base}-editado`;
   if (task === 'fotos') return st.files.every((f) => f.kind === 'image') ? 'fotos' : base;
   return base;
 }
@@ -154,6 +170,8 @@ function primary(task: Task): { label: string; enabled: boolean } {
       return { label: 'Juntar e baixar PDF', enabled: true };
     case 'organizar':
       return { label: 'Baixar PDF', enabled: true };
+    case 'editar':
+      return { label: 'Baixar PDF editado', enabled: true };
     case 'fotos':
       return { label: 'Criar PDF', enabled: true };
     case 'separar':
@@ -176,7 +194,9 @@ let renderedFor = '';
 /** Rebuild the panel's body when the task or the files change; otherwise just refresh labels. */
 export function renderPanel(): void {
   const task = st.task;
-  const key = `${task}|${st.files.map((f) => f.id).join(',')}|${hasImages()}|${st.pages.length}`;
+  const key = `${task}|${st.files.map((f) => f.id).join(',')}|${hasImages()}|${st.pages.length}|${
+    task === 'editar' ? editKey() : hasEdits() || hasPageWideEdits()
+  }`;
   if (key !== renderedFor) {
     const keep = document.activeElement?.id;
     $('panel-body').innerHTML = body(task);
@@ -194,7 +214,8 @@ export function renderPanel(): void {
 async function run(): Promise<void> {
   const task = st.task;
   const name = chosenName(task);
-  if (task === 'juntar' || task === 'organizar' || task === 'fotos') return savePdf(st.pages, name);
+  if (task === 'juntar' || task === 'organizar' || task === 'fotos' || task === 'editar')
+    return savePdf(st.pages, name);
   if (task === 'imagens') {
     const pages = imagesWhich === 'selecionadas' ? selectedPages() : st.pages;
     return saveImages(
@@ -230,6 +251,7 @@ async function run(): Promise<void> {
 
 export function initPanel(refresh: () => void): void {
   const panel = $('panel');
+  initEditPanel(panel, refresh);
   panel.addEventListener('change', (e) => {
     const t = e.target as HTMLInputElement;
     switch (t.name) {

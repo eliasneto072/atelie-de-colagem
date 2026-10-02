@@ -1,41 +1,15 @@
 /** Producing the files people download: PDFs, split parts and page images. */
-import { renderScale, type PageSizeOption } from '../core/pages';
-import type { EncodedImage, OutPage, PdfSource } from './build';
-import type { ImageFile, Page, PdfFile } from './state';
+import { renderScale } from '../core/pages';
+import type { BuildOptions, BuildReport, EncodedImage, OutPage, PdfSource } from './build';
+import { hasRedaction } from './edits';
+import { MARGIN_PT, opts, type Options } from './options';
+import { redactedPicture } from './paint';
+import { openPdf } from './pdfjs';
+import { st, type ImageFile, type Page, type PdfFile } from './state';
 import { busy, download, plural, toast } from './ui';
-
-export interface Options {
-  pageSize: PageSizeOption;
-  margin: boolean;
-  quality: 'normal' | 'alta';
-  format: 'jpg' | 'png';
-  dpi: 150 | 300;
-}
-
-const KEY = 'atelie.pdf.opts';
-const DEFAULTS: Options = { pageSize: 'a4', margin: true, quality: 'normal', format: 'jpg', dpi: 150 };
-
-export const opts: Options = (() => {
-  try {
-    return { ...DEFAULTS, ...(JSON.parse(localStorage.getItem(KEY) ?? '{}') as Partial<Options>) };
-  } catch {
-    return { ...DEFAULTS };
-  }
-})();
-
-export function saveOpts(): void {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(opts));
-  } catch {
-    // private mode: the choice just isn't remembered
-  }
-}
 
 /** pdf-lib and the ZIP writer load the first time a file is made (~150 kB). */
 const builder = () => import('./build');
-
-/** About 1 cm, a comfortable margin around photos. */
-const MARGIN_PT = 28;
 
 function canvasToBytes(canvas: HTMLCanvasElement, type: string, quality?: number): Promise<Uint8Array> {
   return new Promise((resolve, reject) =>
@@ -71,11 +45,12 @@ async function encodePhoto(img: ImageFile, quality: Options['quality']): Promise
  * Pages for the builder. Every page of a file shares one source object, so each PDF is opened
  * and each photo encoded only once per download.
  */
-function toOut(
+async function toOut(
   pages: readonly Page[],
   shared = new Map<PdfFile | ImageFile, OutPage['source']>(),
-): OutPage[] {
-  return pages.map((p) => {
+): Promise<OutPage[]> {
+  const out: OutPage[] = [];
+  for (const p of pages) {
     const f = p.source;
     let source = shared.get(f);
     if (!source) {
@@ -85,14 +60,28 @@ function toOut(
           : { kind: 'image', id: f.id, encode: () => encodePhoto(f, opts.quality) };
       shared.set(f, source);
     }
-    return { source, index: p.index, rotation: p.rotation };
-  });
+    const page: OutPage = { source, index: p.index, rotation: p.rotation, edits: p.edits };
+    if (hasRedaction(p.edits)) {
+      // the page is redrawn as a picture with the boxes burned in: nothing under them survives
+      const pic = await redactedPicture(p);
+      page.raster = {
+        image: { bytes: pic.bytes, type: 'jpg', w: pic.w, h: pic.h },
+        w: pic.pageW,
+        h: pic.pageH,
+        rot: p.baseRot,
+      };
+    }
+    out.push(page);
+  }
+  return out;
 }
 
-const buildOptions = (title: string) => ({
+const buildOptions = (title: string): BuildOptions => ({
   pageSize: opts.pageSize,
   margin: opts.margin ? MARGIN_PT : 0,
   title,
+  watermark: st.watermark.on ? st.watermark : undefined,
+  numbering: st.numbering.on ? st.numbering : undefined,
 });
 
 function failed(err: unknown): void {
@@ -100,18 +89,29 @@ function failed(err: unknown): void {
   toast('Não consegui gerar o arquivo. Se o PDF for muito grande, tente com menos páginas.');
 }
 
+const CHARS_NOTE = ' Alguns símbolos não existem nas fontes do PDF e saíram como "?".';
+
 /** One PDF with these pages, in this order. */
 export async function savePdf(pages: readonly Page[], name: string): Promise<void> {
   if (!pages.length) return;
   try {
-    const pdf = await busy('Montando o PDF…', async (progress) =>
-      (await builder()).buildPdf(toOut(pages), {
-        ...buildOptions(name),
-        onPage: (d, t) => t > 8 && progress(`Montando o PDF… ${d} de ${t} páginas`),
-      }),
-    );
+    const report: BuildReport = { replacedChars: false };
+    const pdf = await busy('Montando o PDF…', async (progress) => {
+      const { buildPdfs } = await builder();
+      const [bytes] = await buildPdfs(
+        [await toOut(pages)],
+        {
+          ...buildOptions(name),
+          onPage: (d, t) => t > 8 && progress(`Montando o PDF… ${d} de ${t} páginas`),
+        },
+        report,
+      );
+      return bytes;
+    });
     download(pdf, `${name}.pdf`, 'application/pdf');
-    toast(`Pronto: ${name}.pdf (${plural(pages.length, 'página', 'páginas')})`);
+    toast(
+      `Pronto: ${name}.pdf (${plural(pages.length, 'página', 'páginas')}).${report.replacedChars ? CHARS_NOTE : ''}`,
+    );
   } catch (err) {
     failed(err);
   }
@@ -127,12 +127,14 @@ export async function saveParts(
   const shared = new Map<PdfFile | ImageFile, OutPage['source']>();
   try {
     const { buildPdfs, zipFiles } = await builder();
-    const pdfs = await busy('Separando o PDF…', (progress) =>
-      buildPdfs(
-        parts.map((g) => toOut(g.pages, shared)),
-        { ...buildOptions(zipName), onPage: (d, t) => t > 8 && progress(`Separando… ${d} de ${t} páginas`) },
-      ),
-    );
+    const pdfs = await busy('Separando o PDF…', async (progress) => {
+      const groupsOut: OutPage[][] = [];
+      for (const g of parts) groupsOut.push(await toOut(g.pages, shared));
+      return buildPdfs(groupsOut, {
+        ...buildOptions(zipName),
+        onPage: (d, t) => t > 8 && progress(`Separando… ${d} de ${t} páginas`),
+      });
+    });
     if (pdfs.length === 1) download(pdfs[0], `${parts[0].name}.pdf`, 'application/pdf');
     else {
       const zip = zipFiles(pdfs.map((data, i) => ({ name: `${parts[i].name}.pdf`, data })));
@@ -180,6 +182,24 @@ async function pageImage(page: Page): Promise<Uint8Array> {
   return bytes;
 }
 
+/** A page of an already-built PDF as a picture (its rotation included). */
+async function pdfPageImage(doc: Awaited<ReturnType<typeof openPdf>>, index: number): Promise<Uint8Array> {
+  const p = await doc.getPage(index + 1);
+  const base = p.getViewport({ scale: 1 });
+  const viewport = p.getViewport({ scale: renderScale(base.width, base.height, opts.dpi) });
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.ceil(viewport.width);
+  canvas.height = Math.ceil(viewport.height);
+  const ctx = canvas.getContext('2d')!;
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  await p.render({ canvas, viewport }).promise;
+  p.cleanup();
+  const bytes = await canvasToBytes(canvas, opts.format === 'png' ? 'image/png' : 'image/jpeg', 0.9);
+  canvas.width = canvas.height = 0;
+  return bytes;
+}
+
 /** Each page as a JPG or PNG; a ZIP when there is more than one. */
 export async function saveImages(
   pages: readonly Page[],
@@ -189,9 +209,25 @@ export async function saveImages(
   if (!pages.length) return;
   const ext = opts.format;
   const type = ext === 'png' ? 'image/png' : 'image/jpeg';
+  const edited = pages.some((p) => p.edits.length) || st.watermark.on || st.numbering.on;
   try {
     const files = await busy('Gerando as imagens…', async (progress) => {
       const out: { name: string; data: Uint8Array }[] = [];
+      if (edited) {
+        // draw the pages with the edits: build the edited PDF, then picture each of its pages
+        const { buildPdfs } = await builder();
+        const [bytes] = await buildPdfs([await toOut(pages)], buildOptions(base));
+        const doc = await openPdf(bytes);
+        try {
+          for (let i = 0; i < doc.numPages; i++) {
+            progress(`Gerando as imagens… ${i + 1} de ${pages.length}`);
+            out.push({ name: `${base}-pagina-${numbers[i]}.${ext}`, data: await pdfPageImage(doc, i) });
+          }
+        } finally {
+          void doc.loadingTask.destroy();
+        }
+        return out;
+      }
       for (const [i, page] of pages.entries()) {
         progress(`Gerando as imagens… ${i + 1} de ${pages.length}`);
         out.push({ name: `${base}-pagina-${numbers[i]}.${ext}`, data: await pageImage(page) });
