@@ -113,8 +113,8 @@ Em **ateliedecolagem.com.br/pdf** (ou no botão **PDF** ao lado do nome, no topo
 as ferramentas de PDF. Como no editor, nada é enviado: os arquivos são lidos e montados no seu
 aparelho.
 
-1. Escolha o que quer fazer na fileira de cima: **Juntar**, **Organizar**, **Separar**,
-   **Fotos → PDF** ou **PDF → imagens**.
+1. Escolha o que quer fazer na fileira de cima: **Juntar**, **Organizar**, **Editar e
+   assinar**, **Separar**, **Fotos → PDF** ou **PDF → imagens**.
 2. Abra os arquivos: botão **Adicionar**, arrastando para a página ou colando (Ctrl+V). PDFs e
    fotos podem ser misturados.
 3. Cada página aparece como um cartão, na ordem em que vai sair.
@@ -136,12 +136,55 @@ aparelho.
 - **Juntar:** as páginas saem na ordem da grade. A lista de arquivos no painel move um arquivo
   inteiro para cima ou para baixo, ou tira o arquivo.
 - **Organizar:** gire, tire e reordene, e baixe o PDF arrumado.
+- **Editar e assinar:** escreva, assine e esconda dados (veja abaixo).
 - **Separar:** só as páginas escolhidas (clicando ou digitando, como `1-3, 5`), cada página em
   um PDF ou em partes por intervalos (`1-3, 4-10, 11-`). Mais de um arquivo vem num ZIP.
 - **Fotos → PDF:** tamanho da página A4, Carta ou igual à foto, com ou sem margem, e qualidade
   normal (arquivo menor) ou alta. Fotos tiradas de lado ficam em pé sozinhas. No celular, o
   botão **Tirar foto** abre a câmera.
 - **PDF → imagens:** JPG ou PNG, em 150 ou 300 dpi, de todas as páginas ou só das selecionadas.
+
+### Editar e assinar
+
+Em **Editar e assinar**, as páginas aparecem grandes, uma embaixo da outra, e a barra de cima
+troca para as ferramentas de escrever. O que você põe na página aparece exatamente como vai sair
+no arquivo.
+
+- **Texto:** clique onde quer escrever e digite. Enter pula linha; clique fora para terminar.
+  Dois cliques num texto voltam a editá-lo. No painel: tamanho da letra (A− e A+), negrito e cor
+  (preto, azul ou vermelho).
+- **Certo, X e Ponto:** clique nas caixinhas do formulário para marcar.
+- **Assinar:** na primeira vez, abre a janela da assinatura. Desenhe com o dedo ou o mouse, em
+  tinta preta ou azul, ou escolha **Foto** e use a foto de uma assinatura feita no papel (o papel
+  fica transparente; funciona melhor com papel branco e caneta escura). Depois, clique na página
+  para pôr a assinatura. **Rubricar todas as páginas** repete a assinatura no mesmo lugar em
+  todas as outras.
+- **Cobrir:** arraste sobre um trecho para cobri-lo de branco (ou cor de papel) e escrever por
+  cima. O que está embaixo continua no arquivo.
+- **Tarja:** arraste sobre o que precisa sumir (CPF, número de conta, endereço). A tarja **apaga
+  de verdade**: no arquivo final, a página com tarja vira uma imagem com a faixa preta, e o texto
+  de baixo não pode mais ser copiado nem pesquisado. As outras páginas continuam como eram.
+- **Destacar:** marca-texto amarelo sobre um trecho.
+- **Mover:** clique num item para selecioná-lo. Arraste para mover, puxe o canto para aumentar ou
+  diminuir, use as setas para ajustes finos (Shift: passos maiores) e **Delete** para excluir.
+  **Repetir em todas as páginas** copia o item para as outras páginas.
+- **Desfazer** (Ctrl+Z) volta o último passo. Os botões **−** e **+** mudam o zoom.
+
+No painel ficam também:
+
+- **Marca d'água em todas as páginas:** um texto na diagonal, como "CÓPIA — uso exclusivo para
+  inscrição no concurso", em cinza, vermelho ou azul, leve, média ou forte. Serve para proteger
+  cópias de documentos que você envia.
+- **Numerar as páginas:** "1", "1 / 9" ou "Página 1 de 9", embaixo no meio, no canto de baixo ou
+  no canto de cima, começando no número que quiser e, se preferir, sem número na capa.
+
+O que você escreveu vai junto em todas as tarefas: ao juntar, separar ou gerar imagens, as
+páginas saem com os textos, assinaturas e tarjas.
+
+> **Sobre a validade da assinatura:** a assinatura desenhada é uma imagem na página, como uma
+> assinatura escaneada. Ela serve quando quem recebe aceita isso, mas não tem a validade jurídica
+> de uma assinatura digital. Para assinar documentos com validade, use o
+> [assinador gratuito do gov.br](https://assinador.iti.br).
 
 ### PDF com senha
 

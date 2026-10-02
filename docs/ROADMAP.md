@@ -8,7 +8,7 @@ O que vem pela frente, em ordem de prioridade. Sugestões são bem-vindas nas
 - [x] Editor em TypeScript, testes, documentação e publicação automática
 - [x] Modo sem internet e instalação como aplicativo
 - [x] Páginas de privacidade e termos
-- [ ] Domínio ateliedecolagem.com.br no ar
+- [x] Domínio ateliedecolagem.com.br no ar, com HTTPS
 - [ ] Cadastro no Google Search Console e no Bing
 - [ ] Link no site da Vértice
 
@@ -22,15 +22,18 @@ O que vem pela frente, em ordem de prioridade. Sugestões são bem-vindas nas
 - [x] Abrir PDF com senha e baixar sem senha
 - [x] Funciona sem internet depois da primeira visita
 
-## PDF, fase 2: escrever por cima (0.3)
+## PDF, fase 2: escrever por cima (0.3) ✔
 
-- **Texto** sobre a página: datas, nomes, "X" em caixinhas (a mesma ferramenta de texto do
-  editor de imagens).
-- **Assinatura desenhada** com o dedo ou o mouse, e rubrica em todas as páginas. Com aviso
-  claro de que não é assinatura digital com validade jurídica, indicando a do gov.br.
-- **Tarja de verdade** para esconder CPF e dados: o conteúdo de baixo é removido, não só coberto.
-- **Marca d'água de proteção** ("Cópia para uso exclusivo em…").
-- **Preencher formulários** de PDF e **numerar páginas**.
+- [x] **Texto** sobre a página: datas, nomes, tamanho, negrito e cor
+- [x] **Marcas** ✓, ✗ e • para caixinhas
+- [x] **Assinatura** desenhada com o dedo ou o mouse, ou a partir da foto de uma assinatura no
+      papel, e rubrica em todas as páginas, com aviso de que não é assinatura digital e link para
+      a do gov.br
+- [x] **Tarja de verdade** para esconder CPF e dados: o conteúdo de baixo é removido
+- [x] **Cobrir** um trecho para escrever por cima e **marca-texto**
+- [x] **Marca d'água de proteção** ("Cópia para uso exclusivo em…")
+- [x] **Numerar páginas**
+- [ ] **Preencher formulários** de PDF (campos de texto, caixas e listas do próprio arquivo)
 
 ## PDF, fase 3: avançado (0.4)
 
@@ -68,4 +71,4 @@ O que vem pela frente, em ordem de prioridade. Sugestões são bem-vindas nas
 ## Fora do escopo
 
 Coisas que não combinam com a proposta: contas e login, armazenamento em nuvem, anúncios, marca
-d'água e qualquer processamento que envie imagens para servidores.
+d'água do site nos arquivos e qualquer processamento que envie imagens para servidores.

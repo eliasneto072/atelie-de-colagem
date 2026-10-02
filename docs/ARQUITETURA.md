@@ -137,17 +137,24 @@ do aparelho para a memória.
 Uma página própria (`pdf/index.html`, código em `src/pdf/`), com o mesmo visual e sem depender
 do editor de imagens.
 
-| Arquivo              | O que faz                                                                              |
-| -------------------- | -------------------------------------------------------------------------------------- |
-| `src/pdf/state.ts`   | Arquivos abertos, páginas na ordem atual, tarefa escolhida e o desfazer.               |
-| `src/pdf/sources.ts` | Abre PDFs (pedindo senha quando preciso) e fotos (já em pé, pelo EXIF).                |
-| `src/pdf/pdfjs.ts`   | Carrega o pdf.js só quando o primeiro PDF é aberto.                                    |
-| `src/pdf/thumbs.ts`  | Miniaturas desenhadas só quando o cartão aparece na tela, guardadas como JPEG pequeno. |
-| `src/pdf/grid.ts`    | A grade de cartões: seleção, girar, tirar, arrastar (no toque: segurar e arrastar).    |
-| `src/pdf/panel.ts`   | O painel de cada tarefa e o botão que gera o arquivo.                                  |
-| `src/pdf/actions.ts` | Gera o PDF, as partes e as imagens, e entrega o download.                              |
-| `src/pdf/build.ts`   | Monta os PDFs com pdf-lib. Roda também no Node, para os testes.                        |
-| `src/core/pages.ts`  | Funções puras: intervalos digitados (`1-3, 5`), tamanho de página, encaixe da foto.    |
+| Arquivo                | O que faz                                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------------------------ |
+| `src/pdf/state.ts`     | Arquivos abertos, páginas na ordem atual, tarefa escolhida e o desfazer.                         |
+| `src/pdf/sources.ts`   | Abre PDFs (pedindo senha quando preciso) e fotos (já em pé, pelo EXIF).                          |
+| `src/pdf/pdfjs.ts`     | Carrega o pdf.js só quando o primeiro PDF é aberto.                                              |
+| `src/pdf/thumbs.ts`    | Miniaturas desenhadas só quando o cartão aparece na tela, guardadas como JPEG pequeno.           |
+| `src/pdf/grid.ts`      | A grade de cartões: seleção, girar, tirar, arrastar (no toque: segurar e arrastar).              |
+| `src/pdf/panel.ts`     | O painel de cada tarefa e o botão que gera o arquivo.                                            |
+| `src/pdf/actions.ts`   | Gera o PDF, as partes e as imagens, e entrega o download.                                        |
+| `src/pdf/build.ts`     | Monta os PDFs com pdf-lib. Roda também no Node, para os testes.                                  |
+| `src/pdf/edits.ts`     | O que se põe na página: texto, assinatura, marca, caixa; marca d'água e numeração.               |
+| `src/pdf/draw.ts`      | Desenha essas edições no PDF com pdf-lib (também no Node).                                       |
+| `src/pdf/viewer.ts`    | O editor de "Editar e assinar": páginas grandes e os gestos de pôr e mexer nos itens.            |
+| `src/pdf/editPanel.ts` | O painel do editor: opções do item selecionado, assinaturas, marca d'água, números.              |
+| `src/pdf/signature.ts` | A janela da assinatura: desenho ou foto do papel, recortada e com fundo transparente.            |
+| `src/pdf/paint.ts`     | Desenha uma página no canvas e gera a imagem da página com tarja.                                |
+| `src/pdf/options.ts`   | Opções guardadas no aparelho (tamanho de página, margem, formato das imagens).                   |
+| `src/core/pages.ts`    | Funções puras: intervalos, tamanho de página, encaixe da foto e a geometria das páginas giradas. |
 
 Decisões:
 
@@ -162,13 +169,30 @@ Decisões:
   separar um PDF longo em centenas de arquivos continua rápido.
 - **Fotos são recodificadas na hora de gerar:** em pé, com fundo branco onde era transparente, e
   reduzidas (até 2000 px no lado maior) na qualidade normal.
-- **Carregamento sob demanda:** a página abre com ~30 kB de código. O pdf.js (~490 kB e um worker
+- **Carregamento sob demanda:** a página abre com ~60 kB de código (~21 kB comprimido). O pdf.js (~490 kB e um worker
   de ~1,3 MB) carrega ao abrir o primeiro PDF; o pdf-lib (~570 kB) ao gerar o primeiro arquivo.
+- **Edições guardadas no espaço da página.** Cada item fica em pontos do PDF (origem embaixo à
+  esquerda, como no próprio arquivo), com o giro que a página tinha quando ele foi posto. Assim o
+  item acompanha a página se ela for girada depois, e o mesmo dado serve para desenhar na tela e
+  no arquivo. As conversões entre tela e página para os quatro giros ficam em `src/core/pages.ts`
+  (`pageToView`, `viewToPage`, `screenAxes`) e têm testes de ida e volta.
+- **O que se vê é o que sai.** A tela usa a Liberation Sans, que tem exatamente as medidas da
+  Helvetica usada no PDF, e a mesma altura de linha e posição da primeira linha de base
+  (`FIRST_BASELINE`). Os testes leem o PDF gerado com o pdf.js e conferem a posição do texto em
+  páginas giradas. Caracteres que a Helvetica padrão não tem (fora do WinAnsi) saem como "?", e
+  o aviso aparece no fim.
+- **Tarja apaga de verdade.** Cobrir com um retângulo preto deixa o texto embaixo, que pode ser
+  copiado. Por isso a página com tarja é desenhada a 200 dpi com as faixas já pintadas e o PDF
+  recebe só essa imagem no lugar da página. As outras páginas continuam sendo copiadas sem perda.
+  O teste confere que o pdf.js não encontra texto nenhum nessa página.
+- **Assinaturas são PNG transparentes** que ficam só na memória da aba. A foto de uma assinatura
+  no papel vira tinta sobre transparência por um limiar a partir do brilho do papel.
 - **Sem internet:** esses arquivos ficam fora do pré-cache do editor (quem só edita imagens não
   baixa nada de PDF). Ao abrir `/pdf/`, a página pede ao service worker (mensagem `cache-pdf`)
   para guardar a lista de arquivos de PDF que o build escreveu nele. Os decodificadores de imagens
   escaneadas e as fontes padrão do pdf.js (`/pdfjs/`) são baixados e guardados só quando um PDF
-  precisa deles.
+  precisa deles; a exceção são as duas Liberation Sans que o editor usa para escrever, que entram
+  na lista.
 
 ## Regra de importação
 
@@ -184,11 +208,14 @@ importação** usando um módulo que talvez ainda não tenha terminado de carreg
 ## Testes
 
 - **Unitários** (`tests/`, Vitest): tudo de `src/core/`, incluindo o preenchimento com semente
-  fixa, e a montagem de PDFs (`src/pdf/build.ts`): ordem, giro, fotos, partes e senhas.
+  fixa, e a montagem de PDFs (`src/pdf/build.ts`): ordem, giro, fotos, partes e senhas, e as
+  edições (posição do texto em páginas giradas, marca d'água, numeração, tarja sem texto embaixo),
+  conferidas lendo o resultado com o pdf.js.
 - **Navegador** (`e2e/`, Playwright): rodam no build de produção, num computador e num celular
   simulado. Cobrem abrir, selecionar, mover, esticar, alinhar, remover objeto, exportar e o modo
   sem internet, e todas as tarefas de PDF, conferindo os arquivos baixados com o pdf-lib (ordem,
-  tamanho e giro de cada página, conteúdo dos ZIPs). Os arquivos de exemplo ficam em
+  tamanho e giro de cada página, conteúdo dos ZIPs) e com o pdf.js (onde o texto escrito caiu,
+  que a tarja apagou o texto, marca d'água e números). Os arquivos de exemplo ficam em
   `e2e/fixtures/`. O teste sem internet derruba um servidor próprio em vez de usar a emulação de
   "offline" do navegador, porque ela também bloqueia o que o service worker responderia do cache.
 

@@ -4,8 +4,9 @@
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-f2b13f)](LICENSE)
 
 Editor de imagens e ferramentas de PDF no navegador: recorte, cole e junte imagens, remova
-letras e objetos refazendo o fundo, troque cores, e junte, separe e organize PDFs. **Grátis, sem
-cadastro, sem marca d'água**, e os arquivos nunca saem do aparelho de quem usa.
+letras e objetos refazendo o fundo, troque cores, e junte, separe, organize, escreva e assine
+PDFs. **Grátis, sem cadastro, sem marca d'água do site**, e os arquivos nunca saem do aparelho de
+quem usa.
 
 **Abrir o editor:** [ateliedecolagem.com.br](https://ateliedecolagem.com.br) · também em
 [eliasneto072.github.io/atelie-de-colagem](https://eliasneto072.github.io/atelie-de-colagem/)
@@ -37,6 +38,9 @@ cadastro, sem marca d'água**, e os arquivos nunca saem do aparelho de quem usa.
 - **Juntar** PDFs e fotos em um arquivo só.
 - **Organizar** páginas: arrastar para mudar a ordem, girar, tirar, desfazer.
 - **Separar:** só as páginas escolhidas, uma página por arquivo ou partes por intervalo.
+- **Editar e assinar:** escrever na página, marcar caixinhas (✓ ✗ •), assinar (desenhando ou
+  pela foto da assinatura) e rubricar todas as páginas, **tarja que apaga de verdade** CPF e
+  dados, cobrir, marca-texto, marca d'água de proteção e numeração de páginas.
 - **Fotos → PDF** em A4, Carta ou no tamanho da foto; no celular, direto da câmera.
 - **PDF → imagens** em JPG ou PNG.
 - Abre **PDF com senha** (com a senha do arquivo) e baixa sem senha.

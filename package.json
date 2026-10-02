@@ -1,6 +1,6 @@
 {
   "name": "atelie-de-colagem",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Editor de imagens e ferramentas de PDF no navegador: recorte, cole, remova objetos, junte e separe PDFs. Grátis, sem cadastro, e os arquivos nunca saem do aparelho.",
   "license": "MIT",

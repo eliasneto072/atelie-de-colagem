@@ -6,6 +6,28 @@ Todas as mudanças relevantes ficam registradas aqui. O formato segue o
 
 ## [Não lançado]
 
+## [0.3.0] - 2026-10-02
+
+"Editar e assinar" nas ferramentas de PDF.
+
+### Adicionado
+
+- Escrever texto em qualquer lugar da página, com tamanho, negrito e cor, em várias linhas.
+- Marcar caixinhas com ✓, X ou ponto.
+- Assinatura desenhada com o dedo ou o mouse (tinta preta ou azul) ou a partir da foto de uma
+  assinatura no papel, que fica com fundo transparente. Rubricar todas as páginas de uma vez.
+  Aviso de que a assinatura desenhada não substitui a assinatura digital, com link para o
+  assinador do gov.br.
+- Tarja que apaga de verdade: a página com tarja vira imagem no arquivo final, sem o texto de
+  baixo.
+- Cobrir um trecho para escrever por cima, e marca-texto.
+- Marca d'água em todas as páginas, com texto, cor e intensidade à escolha.
+- Numeração de páginas: três formatos, três posições, número inicial e opção de pular a capa.
+- Mover, aumentar, repetir em todas as páginas, excluir e desfazer; setas para ajuste fino;
+  zoom.
+- No celular: tocar para pôr, arrastar para mover e para desenhar caixas.
+- As edições vão junto ao juntar, separar e gerar imagens.
+
 ## [0.2.0] - 2026-10-02
 
 Ferramentas de PDF, em `/pdf/`.
@@ -49,6 +71,7 @@ Primeira versão pública.
 - Funciona sem internet depois da primeira visita e pode ser instalado como aplicativo.
 - Páginas de privacidade e termos de uso.
 
-[Não lançado]: https://github.com/eliasneto072/atelie-de-colagem/compare/v0.2.0...HEAD
+[Não lançado]: https://github.com/eliasneto072/atelie-de-colagem/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/eliasneto072/atelie-de-colagem/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/eliasneto072/atelie-de-colagem/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/eliasneto072/atelie-de-colagem/releases/tag/v0.1.0
