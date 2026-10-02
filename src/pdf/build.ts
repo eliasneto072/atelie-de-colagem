@@ -6,6 +6,8 @@
 import { PDFDocument, degrees, type PDFPage } from '@cantoo/pdf-lib';
 import { zipSync } from 'fflate';
 import { fitInPage, normalizeRotation, pageSizeFor, type PageSizeOption } from '../core/pages';
+import { drawEdits, drawNumber, drawWatermark, Resources, type PageFrame } from './draw';
+import type { Edit, Numbering, Watermark } from './edits';
 
 export interface PdfSource {
   kind: 'pdf';
@@ -36,6 +38,20 @@ export interface OutPage {
   index: number;
   /** Extra clockwise rotation chosen by the person, on top of the page's own. */
   rotation: number;
+  /** Text, signatures, marks and boxes to draw on the page. */
+  edits?: readonly Edit[];
+  /**
+   * The page already drawn as a picture, with redaction boxes burned in. When set, the page
+   * is rebuilt from this image instead of being copied, so nothing under a redaction survives.
+   */
+  raster?: {
+    image: EncodedImage;
+    /** Unrotated size of the page's visible box, in points. */
+    w: number;
+    h: number;
+    /** The original page's own rotation. */
+    rot: number;
+  };
 }
 
 export interface BuildOptions {
@@ -44,8 +60,16 @@ export interface BuildOptions {
   /** Margin around photos, in points. */
   margin: number;
   title?: string;
+  watermark?: Watermark;
+  numbering?: Numbering;
   /** Called after each page, for progress messages. */
   onPage?: (done: number, total: number) => void;
+}
+
+/** What the build noticed that the person should know. */
+export interface BuildReport {
+  /** Some characters can't be written with the PDF standard fonts and became "?". */
+  replacedChars: boolean;
 }
 
 const PRODUCER = 'Ateliê de Colagem (ateliedecolagem.com.br)';
@@ -69,6 +93,7 @@ export async function loadForCopy(src: PdfSource): Promise<PDFDocument> {
 export async function buildPdfs(
   groups: readonly (readonly OutPage[])[],
   opts: BuildOptions,
+  report: BuildReport = { replacedChars: false },
 ): Promise<Uint8Array[]> {
   const docs = new Map<number, Promise<PDFDocument>>();
   const openDoc = (src: PdfSource) => {
@@ -91,12 +116,13 @@ export async function buildPdfs(
     out.setProducer(PRODUCER);
     out.setCreator(PRODUCER);
     if (opts.title) out.setTitle(opts.title);
+    const res = new Resources(out);
 
     // copy every page a source contributes in one call, so shared fonts and images are copied once
     const copied = new Map<string, PDFPage>();
     const wanted = new Map<number, { src: PdfSource; indices: number[] }>();
     for (const p of group) {
-      if (p.source.kind !== 'pdf') continue;
+      if (p.source.kind !== 'pdf' || p.raster) continue;
       const w = wanted.get(p.source.id) ?? { src: p.source, indices: [] };
       if (!w.indices.includes(p.index)) w.indices.push(p.index);
       wanted.set(p.source.id, w);
@@ -106,23 +132,47 @@ export async function buildPdfs(
       indices.forEach((ix, k) => copied.set(`${src.id}:${ix}`, pages[k]));
     }
 
-    for (const p of group) {
-      if (p.source.kind === 'pdf') {
-        const page = copied.get(`${p.source.id}:${p.index}`);
-        if (!page) throw new Error('página não encontrada');
-        page.setRotation(degrees(normalizeRotation(page.getRotation().angle + p.rotation)));
+    for (const [k, p] of group.entries()) {
+      let page: PDFPage;
+      let frame: PageFrame;
+      if (p.raster) {
+        const { image, w, h } = p.raster;
+        page = out.addPage([w, h]);
+        const embedded =
+          image.type === 'jpg' ? await out.embedJpg(image.bytes) : await out.embedPng(image.bytes);
+        page.drawImage(embedded, { x: 0, y: 0, width: w, height: h });
+        const rot = normalizeRotation(p.raster.rot + p.rotation);
+        if (rot) page.setRotation(degrees(rot));
+        frame = { x0: 0, y0: 0, w, h, rot };
+      } else if (p.source.kind === 'pdf') {
+        const copy = copied.get(`${p.source.id}:${p.index}`);
+        if (!copy) throw new Error('página não encontrada');
+        page = copy;
+        const rot = normalizeRotation(page.getRotation().angle + p.rotation);
+        page.setRotation(degrees(rot));
         out.addPage(page);
+        const box = page.getCropBox();
+        frame = { x0: box.x, y0: box.y, w: box.width, h: box.height, rot };
       } else {
         const img = await encoded(p.source);
         const size = pageSizeFor(opts.pageSize, img.w, img.h);
-        const page = out.addPage([size.w, size.h]);
+        page = out.addPage([size.w, size.h]);
         const embedded = img.type === 'jpg' ? await out.embedJpg(img.bytes) : await out.embedPng(img.bytes);
         const margin = opts.pageSize === 'foto' ? 0 : opts.margin;
         page.drawImage(embedded, fitInPage(size.w, size.h, img.w, img.h, margin));
-        if (normalizeRotation(p.rotation)) page.setRotation(degrees(normalizeRotation(p.rotation)));
+        const rot = normalizeRotation(p.rotation);
+        if (rot) page.setRotation(degrees(rot));
+        frame = { x0: 0, y0: 0, w: size.w, h: size.h, rot };
+      }
+      if (p.edits?.length) await drawEdits(page, p.edits, frame, res);
+      if (opts.watermark?.text.trim()) await drawWatermark(page, opts.watermark, frame, res);
+      const nb = opts.numbering;
+      if (nb && !(nb.skipFirst && k === 0)) {
+        await drawNumber(page, nb, nb.start + k, nb.start + group.length - 1, frame, res);
       }
       opts.onPage?.(++done, total);
     }
+    if (res.replacedChars) report.replacedChars = true;
     outputs.push(await out.save({ useObjectStreams: true }));
   }
   return outputs;
