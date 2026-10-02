@@ -10,6 +10,13 @@ updates:
     commit-message:
       prefix: chore
       include: scope
+    ignore:
+      # typescript-eslint only supports TypeScript up to 6.0: update the two together, by hand
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      # the Node types follow the Node version in .nvmrc (24)
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
     groups:
       desenvolvimento:
         dependency-type: development
