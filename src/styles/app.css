@@ -101,6 +101,36 @@ select {
   color: var(--muted);
   letter-spacing: -0.01em;
 }
+.top-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+.switch {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+}
+.switch a {
+  padding: 4px 11px;
+  border-radius: 7px;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 12.5px;
+}
+.switch a:hover {
+  color: var(--fg);
+}
+.switch a[aria-current='page'] {
+  background: var(--raise);
+  color: var(--fg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
 .top-actions {
   display: flex;
   align-items: center;

@@ -52,17 +52,24 @@
   <body>
     <div class="app" id="app">
       <header class="top">
-        <button
-          class="brand"
-          id="btn-about"
-          type="button"
-          title="Sobre o Ateliê de Colagem"
-          aria-label="Sobre o Ateliê de Colagem"
-        >
-          <img class="brand-mark" src="/favicon.svg" alt="" width="30" height="30" /><span class="brand-name"
-            >Ateliê</span
-          ><span class="brand-sub">de colagem</span>
-        </button>
+        <div class="top-left">
+          <button
+            class="brand"
+            id="btn-about"
+            type="button"
+            title="Sobre o Ateliê de Colagem"
+            aria-label="Sobre o Ateliê de Colagem"
+          >
+            <img class="brand-mark" src="/favicon.svg" alt="" width="30" height="30" /><span
+              class="brand-name"
+              >Ateliê</span
+            ><span class="brand-sub">de colagem</span>
+          </button>
+          <nav class="switch only-desktop" aria-label="Ferramentas">
+            <a href="./" aria-current="page">Imagens</a>
+            <a href="./pdf/">PDF</a>
+          </nav>
+        </div>
         <div class="top-actions">
           <button class="btn primary" id="btn-open" type="button">
             <span>Abrir</span><span class="only-desktop">imagens</span>
@@ -566,6 +573,7 @@
           para nenhum servidor.
         </p>
         <ul class="about-links">
+          <li><a href="./pdf/">Ferramentas de PDF: juntar, separar e organizar</a></li>
           <li><a href="./privacidade.html">Privacidade</a></li>
           <li><a href="./termos.html">Termos de uso</a></li>
           <li>
