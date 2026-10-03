@@ -14,7 +14,7 @@ export async function openPdfTools(page: Page, task = 'juntar'): Promise<void> {
 export async function addFiles(page: Page, names: string[], expectedPages: number): Promise<void> {
   await page.locator('#file-input').setInputFiles(names.map(fixture));
   // the editor shows big pages instead of cards
-  const editing = (await page.evaluate(() => location.hash)) === '#editar';
+  const editing = (await page.evaluate(() => location.hash)).startsWith('#editar');
   await expect(page.locator(editing ? '.vpage' : '.card')).toHaveCount(expectedPages);
 }
 

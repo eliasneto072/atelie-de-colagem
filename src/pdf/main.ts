@@ -14,7 +14,8 @@ import { registerServiceWorker } from '../pwa';
 import { doUndo, initGrid, onChange, removePages, renderGrid, rotate, selectAll, shift } from './grid';
 import { initPanel, renderPanel } from './panel';
 import { addFiles } from './sources';
-import { TASKS, canUndo, selectedPages, st, type Task, type Tool } from './state';
+import { routeFromHash } from './route';
+import { canUndo, selectedPages, st, type Task, type Tool } from './state';
 import { $, plural } from './ui';
 import {
   isTyping,
@@ -77,11 +78,6 @@ function setTask(task: Task): void {
   history.replaceState(null, '', `#${task}`);
   refresh();
 }
-
-const taskFromHash = (): Task => {
-  const h = location.hash.slice(1) as Task;
-  return TASKS.includes(h) ? h : 'juntar';
-};
 
 async function open(files: FileList | File[] | null): Promise<void> {
   if (!files?.length) return;
@@ -150,7 +146,8 @@ function initToolbar(): void {
   $('ed-zoom-in').addEventListener('click', () => zoomBy(1.25));
   $('ed-zoom-out').addEventListener('click', () => zoomBy(0.8));
   $('edit-toolbar').addEventListener('click', (e) => {
-    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-tool]');
+    // only the tool buttons: <body> also carries data-tool (for the cursor styles)
+    const b = (e.target as HTMLElement).closest<HTMLElement>('#edit-toolbar [data-tool]');
     if (!b) return;
     const tool = b.dataset.tool as Tool;
     // the signature tool needs a signature first
@@ -189,8 +186,15 @@ function initToolbar(): void {
   });
 }
 
-st.task = taskFromHash();
-window.addEventListener('hashchange', () => setTask(taskFromHash()));
+// links can open a task, and in "Editar e assinar" a tool too (#editar/tarja)
+const start = routeFromHash(location.hash);
+st.task = start.task;
+if (start.tool) st.tool = start.tool;
+window.addEventListener('hashchange', () => {
+  const { task, tool } = routeFromHash(location.hash);
+  setTask(task);
+  if (tool) setTool(tool);
+});
 onChange(refresh);
 onEditChange(refresh);
 // the editor lays pages out to the board's width

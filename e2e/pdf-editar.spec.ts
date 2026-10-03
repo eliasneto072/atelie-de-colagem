@@ -145,4 +145,20 @@ test.describe('editar PDF no computador', () => {
     const [first] = await readText((await downloadFrom(page)).bytes);
     expect(first.items.map((i) => i.str)).toContain('Visto');
   });
+
+  test('o link #editar/tarja já abre com a tarja escolhida', async ({ page }) => {
+    await page.goto('./pdf/#editar/tarja');
+    await expect(page.locator('[data-task=editar]')).toHaveAttribute('aria-pressed', 'true');
+    await addFiles(page, ['contrato.pdf'], 2);
+    await expect(page.locator('#edit-toolbar [data-tool=redact]')).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('zoom e desfazer não reabrem a janela da assinatura', async ({ page }) => {
+    await page.goto('./pdf/#editar/assinar');
+    await addFiles(page, ['contrato.pdf'], 2);
+    await page.locator('#ed-zoom-out').click();
+    await page.locator('#ed-undo').click({ force: true });
+    await expect(page.locator('#sig-dialog')).toBeHidden();
+    await expect(page.locator('#ed-zoom')).toHaveText('80%');
+  });
 });
