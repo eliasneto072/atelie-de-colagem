@@ -234,15 +234,38 @@ export function openSignaturePad(): Promise<Signature | null> {
   setMode('draw');
   requestAnimationFrame(fitCanvas);
   return new Promise((resolve) => {
-    const onClose = async () => {
-      if (dlg.returnValue !== 'ok') return resolve(null);
+    const ok = dlg.querySelector<HTMLButtonElement>('button[value=ok]')!;
+    let busy = false;
+    let done = false;
+    const cleanup = () => {
+      ok.removeEventListener('click', onOk);
+      dlg.removeEventListener('close', onClose);
+    };
+    // the signature is ready before the window closes, so a quick click on the page right
+    // after "Usar assinatura" already places it
+    const onOk = async (ev: Event) => {
+      ev.preventDefault();
+      if (busy) return;
+      busy = true;
       const sig = await finish();
-      if (!sig)
+      busy = false;
+      if (!sig) {
         toast(
           mode === 'draw' ? 'Desenhe a assinatura antes de usar.' : 'Escolha a foto da assinatura antes.',
         );
+        return;
+      }
+      done = true;
+      cleanup();
       resolve(sig);
+      dlg.close('ok');
     };
-    dlg.addEventListener('close', () => void onClose(), { once: true });
+    const onClose = () => {
+      if (done) return;
+      cleanup();
+      resolve(null);
+    };
+    ok.addEventListener('click', onOk);
+    dlg.addEventListener('close', onClose);
   });
 }
