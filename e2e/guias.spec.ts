@@ -39,9 +39,21 @@ for (const url of urls) {
   test(`página pronta para buscadores: ${url.slice(SITE.length) || '/'}`, async ({ page }) => {
     const errors = watchErrors(page);
     const failed: string[] = [];
+    const counted: string[] = [];
     page.on('response', (r) => r.status() >= 400 && failed.push(`${r.status()} ${r.url()}`));
+    page.on('request', (r) => r.url().includes('cloudflareinsights') && counted.push(r.url()));
     await page.goto(path(url));
     await page.waitForLoadState('networkidle');
+
+    // the visit counter is on every page, but only loads on the real domain: tests never count
+    const counters = await page.evaluate(
+      () =>
+        [...document.querySelectorAll('script:not([src])')].filter((s) =>
+          s.textContent?.includes('cloudflareinsights'),
+        ).length,
+    );
+    expect(counters).toBe(1);
+    expect(counted).toEqual([]);
 
     await expect(page.locator('h1')).toHaveCount(1);
     expect((await page.title()).length).toBeGreaterThan(10);

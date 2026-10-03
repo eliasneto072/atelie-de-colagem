@@ -73,6 +73,36 @@ function serviceWorkerManifest(): Plugin {
   };
 }
 
+/**
+ * Visit counting with Cloudflare Web Analytics: no cookies, nothing stored on the device, no
+ * individual tracking (see privacidade.html). Added to every page of the build, and it only
+ * loads on the real domain, so local runs and the tests never count as visits. "spa": false
+ * keeps task switches on /pdf/ (hash changes) from counting as new visits.
+ */
+const ANALYTICS_HOST = 'ateliedecolagem.com.br';
+const ANALYTICS_TOKEN = '92d56f0c53404e09b38c8fffe9ab989d';
+
+function analytics(): Plugin {
+  const beacon = JSON.stringify({ token: ANALYTICS_TOKEN, spa: false });
+  return {
+    name: 'atelie:analytics',
+    apply: 'build',
+    transformIndexHtml: () => [
+      {
+        tag: 'script',
+        injectTo: 'head',
+        children:
+          `if (location.hostname === '${ANALYTICS_HOST}') {` +
+          `const s = document.createElement('script');` +
+          `s.type = 'module';` +
+          `s.src = 'https://static.cloudflareinsights.com/beacon.min.js';` +
+          `s.setAttribute('data-cf-beacon', '${beacon}');` +
+          `document.head.append(s);}`,
+      },
+    ],
+  };
+}
+
 /** pdf.js data it fetches on demand: decoders for scanned images and the 14 standard fonts. */
 const PDFJS_DATA: Record<string, string> = {
   wasm: resolve(root, 'node_modules/pdfjs-dist/wasm'),
@@ -123,7 +153,7 @@ const isPdfChunk = (ids: readonly string[]) => ids.some(isPdfModule) && !ids.som
 export default defineConfig({
   base: './',
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
-  plugins: [pdfjsData(), serviceWorkerManifest()],
+  plugins: [pdfjsData(), analytics(), serviceWorkerManifest()],
   build: {
     target: 'es2022',
     // pdf.js (~1.3 MB worker) only loads on /pdf/ when a PDF is opened
