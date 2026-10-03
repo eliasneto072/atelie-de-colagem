@@ -178,6 +178,10 @@ No painel ficam também:
 - **Numerar as páginas:** "1", "1 / 9" ou "Página 1 de 9", embaixo no meio, no canto de baixo ou
   no canto de cima, começando no número que quiser e, se preferir, sem número na capa.
 
+Para mandar alguém direto para uma ferramenta, use o endereço com o nome dela:
+`ateliedecolagem.com.br/pdf/#editar/assinar`, `#editar/tarja`, `#editar/texto` e assim por
+diante. Para as outras tarefas: `#juntar`, `#organizar`, `#separar`, `#fotos` e `#imagens`.
+
 O que você escreveu vai junto em todas as tarefas: ao juntar, separar ou gerar imagens, as
 páginas saem com os textos, assinaturas e tarjas.
 

@@ -154,6 +154,7 @@ do editor de imagens.
 | `src/pdf/signature.ts` | A janela da assinatura: desenho ou foto do papel, recortada e com fundo transparente.            |
 | `src/pdf/paint.ts`     | Desenha uma página no canvas e gera a imagem da página com tarja.                                |
 | `src/pdf/options.ts`   | Opções guardadas no aparelho (tamanho de página, margem, formato das imagens).                   |
+| `src/pdf/route.ts`     | Links que abrem uma tarefa e, em "Editar e assinar", uma ferramenta: `#editar/tarja`.            |
 | `src/core/pages.ts`    | Funções puras: intervalos, tamanho de página, encaixe da foto e a geometria das páginas giradas. |
 
 Decisões:
@@ -193,6 +194,21 @@ Decisões:
   escaneadas e as fontes padrão do pdf.js (`/pdfjs/`) são baixados e guardados só quando um PDF
   precisa deles; a exceção são as duas Liberation Sans que o editor usa para escrever, que entram
   na lista.
+
+## Guias (`/assinar-pdf/`, `/esconder-cpf-pdf/`, `/foto-para-pdf/`, `/juntar-pdf/`)
+
+Páginas estáticas para quem chega pela busca: título e descrição com as palavras que as pessoas
+digitam, passo a passo, uma imagem real da ferramenta (`public/guias/`, WebP na página e JPG para
+redes sociais), perguntas frequentes e um botão que abre a ferramenta já na tarefa certa
+(`../pdf/#editar/assinar`, `../pdf/#editar/tarja`, `../pdf/#fotos`, `../pdf/#juntar`). O estilo
+fica em `src/styles/guia.css`.
+
+- Cada guia tem dados estruturados (`WebPage`, `BreadcrumbList` e `FAQPage`); as perguntas do
+  `FAQPage` são as mesmas da página, e um teste confere isso.
+- A lista `GUIDES` em `vite.config.ts` coloca os guias no build e os deixa fora do pré-cache do
+  modo sem internet: são páginas para ler on-line.
+- Toda página nova precisa entrar em `public/sitemap.xml`. Um teste compara o sitemap com as
+  páginas do build e confere título, descrição, endereço canônico e imagens de cada uma.
 
 ## Regra de importação
 

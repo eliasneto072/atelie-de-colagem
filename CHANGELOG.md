@@ -6,6 +6,19 @@ Todas as mudanças relevantes ficam registradas aqui. O formato segue o
 
 ## [Não lançado]
 
+### Adicionado
+
+- Guias para quem chega pela busca: assinar PDF, esconder CPF em PDF, foto para PDF e juntar
+  PDF, com passo a passo, imagem da ferramenta, perguntas frequentes e um botão que já abre a
+  tarefa certa. Links para eles na página de PDF e na janela Sobre.
+- Links que abrem uma ferramenta de "Editar e assinar": `/pdf/#editar/tarja`,
+  `/pdf/#editar/assinar` e os demais nomes da barra.
+
+### Corrigido
+
+- Com a ferramenta Assinar escolhida e nenhuma assinatura criada, clicar em zoom ou em Desfazer
+  abria de novo a janela da assinatura.
+
 ## [0.3.0] - 2026-10-02
 
 "Editar e assinar" nas ferramentas de PDF.

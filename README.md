@@ -45,6 +45,11 @@ quem usa.
 - **PDF → imagens** em JPG ou PNG.
 - Abre **PDF com senha** (com a senha do arquivo) e baixa sem senha.
 
+Guias no site: [assinar PDF](https://ateliedecolagem.com.br/assinar-pdf/),
+[esconder CPF em PDF](https://ateliedecolagem.com.br/esconder-cpf-pdf/),
+[foto para PDF](https://ateliedecolagem.com.br/foto-para-pdf/) e
+[juntar PDF](https://ateliedecolagem.com.br/juntar-pdf/).
+
 O passo a passo de cada ferramenta e os atalhos estão no [Guia de uso](docs/GUIA.md).
 
 ## Privacidade
@@ -100,6 +105,7 @@ src/
   main.ts      ponto de entrada
 public/        ícones, manifest, service worker, robots e sitemap
 pdf/           página das ferramentas de PDF
+*-pdf/         guias (assinar, esconder CPF, foto para PDF, juntar)
 tests/         testes unitários
 e2e/           testes no navegador (computador e celular) e arquivos de exemplo
 docs/          guia, arquitetura, publicação e planos

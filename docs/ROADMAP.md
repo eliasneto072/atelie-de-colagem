@@ -9,7 +9,7 @@ O que vem pela frente, em ordem de prioridade. Sugestões são bem-vindas nas
 - [x] Modo sem internet e instalação como aplicativo
 - [x] Páginas de privacidade e termos
 - [x] Domínio ateliedecolagem.com.br no ar, com HTTPS
-- [ ] Cadastro no Google Search Console e no Bing
+- [ ] Cadastro no Google Search Console (em verificação) e no Bing
 - [ ] Link no site da Vértice
 
 ## PDF, fase 1: organizar (0.2) ✔
@@ -62,9 +62,15 @@ O que vem pela frente, em ordem de prioridade. Sugestões são bem-vindas nas
 
 ## Alcance
 
-- Páginas de entrada para tarefas comuns ("juntar PDF", "separar PDF", "foto para PDF",
-  "remover texto de imagem", "tirar fundo branco de logo") com um exemplo e um botão que abre a
-  ferramenta certa.
+- [x] Guias para as buscas mais comuns de PDF, cada um com o passo a passo, uma imagem real da
+      ferramenta, perguntas frequentes e um botão que abre a ferramenta na tarefa certa:
+      [assinar PDF](https://ateliedecolagem.com.br/assinar-pdf/),
+      [esconder CPF em PDF](https://ateliedecolagem.com.br/esconder-cpf-pdf/),
+      [foto para PDF](https://ateliedecolagem.com.br/foto-para-pdf/) e
+      [juntar PDF](https://ateliedecolagem.com.br/juntar-pdf/)
+- [ ] Mais guias: separar PDF, PDF para imagem, numerar páginas, marca d'água em documento,
+      remover texto de imagem, tirar fundo branco de logo
+- [ ] Contador de visitas sem cookies (Cloudflare Web Analytics ou GoatCounter)
 - Versões em inglês e espanhol.
 - Melhorias de acessibilidade: navegação completa por teclado e leitores de tela no painel.
 
