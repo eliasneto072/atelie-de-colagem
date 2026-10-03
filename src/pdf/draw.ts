@@ -24,9 +24,10 @@ import {
   type Rot,
   type Vec2,
 } from '../core/pages';
+import type { FontId } from '../core/fonts';
 import {
-  FIRST_BASELINE,
   LINE_HEIGHT,
+  firstBaseline,
   rgb01,
   type Edit,
   type Numbering,
@@ -36,18 +37,59 @@ import {
 
 const color = (hex: string) => rgb(...rgb01(hex));
 
+/** The PDF's own fonts, which every reader has: [regular, bold, italic, bold italic]. */
+const STANDARD: Record<Exclude<FontId, 'calibri'>, StandardFonts[]> = {
+  sans: [
+    StandardFonts.Helvetica,
+    StandardFonts.HelveticaBold,
+    StandardFonts.HelveticaOblique,
+    StandardFonts.HelveticaBoldOblique,
+  ],
+  serif: [
+    StandardFonts.TimesRoman,
+    StandardFonts.TimesRomanBold,
+    StandardFonts.TimesRomanItalic,
+    StandardFonts.TimesRomanBoldItalic,
+  ],
+  mono: [
+    StandardFonts.Courier,
+    StandardFonts.CourierBold,
+    StandardFonts.CourierOblique,
+    StandardFonts.CourierBoldOblique,
+  ],
+};
+
+/** The file of a font that has to be embedded (Carlito, for Calibri). */
+export type FontFileLoader = (font: FontId, bold: boolean, italic: boolean) => Promise<Uint8Array>;
+
 /** Fonts and signature images, embedded once per output document. */
 export class Resources {
   private fonts = new Map<string, Promise<PDFFont>>();
+  private charsets = new Map<PDFFont, Set<number> | undefined>();
   private sigs = new Map<number, Promise<PDFImage>>();
-  /** Some characters had no glyph in the standard fonts and became "?". */
+  /** Some characters had no glyph in the fonts and became "?". */
   replacedChars = false;
-  constructor(private doc: PDFDocument) {}
+  constructor(
+    private doc: PDFDocument,
+    private fontFile?: FontFileLoader,
+  ) {}
 
-  font(bold: boolean): Promise<PDFFont> {
-    const name = bold ? StandardFonts.HelveticaBold : StandardFonts.Helvetica;
-    let f = this.fonts.get(name);
-    if (!f) this.fonts.set(name, (f = this.doc.embedFont(name)));
+  font(bold: boolean, face: FontId = 'sans', italic = false): Promise<PDFFont> {
+    const key = `${face}|${bold}|${italic}`;
+    let f = this.fonts.get(key);
+    if (f) return f;
+    if (face === 'calibri' && this.fontFile) {
+      const load = this.fontFile;
+      f = (async () => {
+        const fontkit = (await import('@cantoo/fontkit')).default;
+        this.doc.registerFontkit(fontkit);
+        return this.doc.embedFont(await load(face, bold, italic), { subset: true });
+      })();
+    } else {
+      const set = STANDARD[face === 'calibri' ? 'sans' : face];
+      f = this.doc.embedFont(set[(bold ? 1 : 0) + (italic ? 2 : 0)]);
+    }
+    this.fonts.set(key, f);
     return f;
   }
 
@@ -57,10 +99,42 @@ export class Resources {
     return img;
   }
 
-  text(s: string): string {
-    const r = toWinAnsi(s);
-    if (r.replaced) this.replacedChars = true;
-    return r.text;
+  /** The text as the font can write it: characters it has no letter for become "?". */
+  text(s: string, font?: PDFFont): string {
+    const charset = font && this.charsetOf(font);
+    if (!charset) {
+      const r = toWinAnsi(s);
+      if (r.replaced) this.replacedChars = true;
+      return r.text;
+    }
+    let out = '';
+    for (const ch of s) {
+      const cp = ch.codePointAt(0)!;
+      if (ch === '\n' || charset.has(cp)) out += ch;
+      else {
+        out += '?';
+        this.replacedChars = true;
+      }
+    }
+    return out;
+  }
+
+  /** The characters an embedded font has (none for the standard fonts, which use WinAnsi). */
+  private charsetOf(font: PDFFont): Set<number> | undefined {
+    if (this.charsets.has(font)) return this.charsets.get(font);
+    let set: Set<number> | undefined;
+    try {
+      const all = font.getCharacterSet();
+      // standard fonts report their WinAnsi set; only custom fonts need their own check
+      set =
+        all.length && !Object.values(StandardFonts).includes(font.name as StandardFonts)
+          ? new Set(all)
+          : undefined;
+    } catch {
+      set = undefined;
+    }
+    this.charsets.set(font, set);
+    return set;
   }
 }
 
@@ -108,11 +182,12 @@ export async function drawEdits(
         });
       }
     } else if (e.kind === 'text') {
-      const font = await res.font(e.bold);
-      const lines = res.text(e.text).split('\n');
+      const font = await res.font(e.bold, e.font, e.italic);
+      const lines = res.text(e.text, font).split('\n');
+      const base = firstBaseline(e.font);
       lines.forEach((line, i) => {
         if (!line) return;
-        const [x, y] = along(top, e.rot, 0, (FIRST_BASELINE + i * LINE_HEIGHT) * e.size);
+        const [x, y] = along(top, e.rot, 0, (base + i * LINE_HEIGHT) * e.size);
         page.drawText(line, { x, y, size: e.size, font, color: color(e.color), rotate: degrees(e.rot) });
       });
     } else if (e.kind === 'image') {

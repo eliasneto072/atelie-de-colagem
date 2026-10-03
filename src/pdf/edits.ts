@@ -7,6 +7,7 @@
  * item's top-left corner, and `rot` is the page's rotation when it was placed, so the item
  * reads upright at that rotation and turns with the page if the page is turned later.
  */
+import type { FontId } from '../core/fonts';
 import type { Rot } from '../core/pages';
 
 interface Base {
@@ -23,6 +24,11 @@ export interface TextEdit extends Base {
   size: number;
   color: string;
   bold: boolean;
+  /** Missing in texts made before there was a choice: Arial (sans). */
+  font?: FontId;
+  italic?: boolean;
+  /** The document's font this text was matched to ("Times New Roman"), shown in the panel. */
+  from?: string;
 }
 
 /** A signature or initials: a transparent PNG. */
@@ -85,6 +91,24 @@ export interface Numbering {
 export const LINE_HEIGHT = 1.2;
 /** Baseline of the first line below the box top, for Helvetica / Liberation Sans at LINE_HEIGHT. */
 export const FIRST_BASELINE = (LINE_HEIGHT - 1.117) / 2 + 0.905;
+
+/**
+ * Ascent and descent of each screen font (from its hhea table, in ems). They place the first
+ * baseline the way a browser lays out a line of LINE_HEIGHT: half the extra space above, then
+ * the ascent. The builder puts the PDF text on that same baseline.
+ */
+const METRICS: Record<FontId, [number, number]> = {
+  sans: [0.905, 0.212],
+  serif: [1825 / 2048, 443 / 2048],
+  mono: [1705 / 2048, 615 / 2048],
+  calibri: [1950 / 2048, 550 / 2048],
+};
+
+/** Baseline of the first line below the box top, as a multiple of the font size. */
+export function firstBaseline(font: FontId = 'sans'): number {
+  const [asc, desc] = METRICS[font];
+  return (LINE_HEIGHT - asc - desc) / 2 + asc;
+}
 
 export const hasRedaction = (edits: readonly Edit[]): boolean =>
   edits.some((e) => e.kind === 'rect' && e.style === 'redact');

@@ -6,7 +6,7 @@
 import { PDFDocument, degrees, type PDFPage } from '@cantoo/pdf-lib';
 import { zipSync } from 'fflate';
 import { fitInPage, normalizeRotation, pageSizeFor, type PageSizeOption } from '../core/pages';
-import { drawEdits, drawNumber, drawWatermark, Resources, type PageFrame } from './draw';
+import { drawEdits, drawNumber, drawWatermark, Resources, type FontFileLoader, type PageFrame } from './draw';
 import type { Edit, Numbering, Watermark } from './edits';
 
 export interface PdfSource {
@@ -64,11 +64,13 @@ export interface BuildOptions {
   numbering?: Numbering;
   /** Called after each page, for progress messages. */
   onPage?: (done: number, total: number) => void;
+  /** Reads the files of fonts that are embedded (Calibri's look-alike). */
+  fontFile?: FontFileLoader;
 }
 
 /** What the build noticed that the person should know. */
 export interface BuildReport {
-  /** Some characters can't be written with the PDF standard fonts and became "?". */
+  /** Some characters can't be written with the fonts and became "?". */
   replacedChars: boolean;
 }
 
@@ -116,7 +118,7 @@ export async function buildPdfs(
     out.setProducer(PRODUCER);
     out.setCreator(PRODUCER);
     if (opts.title) out.setTitle(opts.title);
-    const res = new Resources(out);
+    const res = new Resources(out, opts.fontFile);
 
     // copy every page a source contributes in one call, so shared fonts and images are copied once
     const copied = new Map<string, PDFPage>();

@@ -1,4 +1,5 @@
 /** The panel for "Editar e assinar": the selected item's options, signatures, watermark and page numbers. */
+import { FONT_IDS, FONT_LABELS, recognizeFont, type FontId } from '../core/fonts';
 import type { Edit, RectEdit } from './edits';
 import { st, type Tool } from './state';
 import { toast } from './ui';
@@ -26,17 +27,25 @@ const COVERS: [string, string][] = [
   ['#111111', 'Preto'],
 ];
 
-const swatches = (name: string, value: string, list: [string, string][]) =>
-  `<div class="swatches" role="radiogroup">${list
+const swatches = (name: string, value: string, list: [string, string][], custom = false) => {
+  const known = list.some(([c]) => c.toLowerCase() === value.toLowerCase());
+  // a colour taken from the document shows as one more swatch, already chosen
+  const all: [string, string][] = custom && !known ? [...list, [value, 'Cor do documento']] : list;
+  return `<div class="swatches" role="radiogroup">${all
     .map(
       ([c, label]) =>
         `<label title="${label}"><input type="radio" name="${name}" value="${c}"${c.toLowerCase() === value.toLowerCase() ? ' checked' : ''} aria-label="${label}" /><i style="--c:${c}"></i></label>`,
     )
-    .join('')}</div>`;
+    .join('')}${
+    custom
+      ? `<label class="swatch-pick" title="Outra cor"><input type="color" name="${name}-pick" value="${value}" aria-label="Outra cor" /><i></i></label>`
+      : ''
+  }</div>`;
+};
 
 const HINTS: Record<Tool, string> = {
   select: 'Clique num item da página para mover, mudar ou excluir. Arraste a página para rolar.',
-  text: 'Clique onde quer escrever. Enter pula linha; clique fora para terminar.',
+  text: 'Clique onde quer escrever. Perto de um texto do documento, sai com a mesma fonte, tamanho e cor, alinhado na linha. Enter pula linha; clique fora para terminar.',
   sign: 'Clique onde quer pôr a assinatura. Depois dá para mover, aumentar e repetir em todas as páginas.',
   check: 'Clique nas caixinhas para marcar.',
   x: 'Clique nas caixinhas para marcar.',
@@ -48,20 +57,40 @@ const HINTS: Record<Tool, string> = {
   highlight: 'Arraste sobre o trecho para destacar.',
 };
 
+/** What the panel says about the document's font the text was matched to. */
+function fromHint(from: string, font: FontId, size: string): string {
+  const doc = recognizeFont(from);
+  const text =
+    doc.font !== font
+      ? `No documento: ${esc(from)}.`
+      : doc.exact
+        ? `Igual ao documento: ${esc(from)}, ${size} pt.`
+        : `No documento: ${esc(from)}. A mais parecida aqui é ${FONT_LABELS[font]}.`;
+  return `<p class="hint from">${text}</p>`;
+}
+
 function selectedOptions(e: Edit): string {
   const actions = `<div class="ed-actions">
       <button type="button" class="btn small" data-ed="repeat">${e.kind === 'image' ? 'Rubricar todas as páginas' : 'Repetir em todas as páginas'}</button>
       <button type="button" class="btn small danger" data-ed="delete">Excluir</button>
     </div>`;
   if (e.kind === 'text') {
+    const font = e.font ?? 'sans';
+    const size = Number.isInteger(e.size) ? `${e.size}` : e.size.toFixed(1).replace('.', ',');
+    const from = e.from ? fromHint(e.from, font, size) : '';
     return `<div class="opt sel-opts"><p class="opt-title">Texto selecionado</p>
+      <label class="font-row"><span class="sr-only">Fonte</span><select id="ed-font" aria-label="Fonte">${FONT_IDS.map(
+        (f) => `<option value="${f}"${f === font ? ' selected' : ''}>${FONT_LABELS[f]}</option>`,
+      ).join('')}</select></label>
       <div class="inline size-row">
         <button type="button" class="btn small" data-ed="smaller" aria-label="Diminuir a letra">A−</button>
-        <span class="size-val">${Math.round(e.size)} pt</span>
+        <span class="size-val">${size} pt</span>
         <button type="button" class="btn small" data-ed="bigger" aria-label="Aumentar a letra">A+</button>
-        <button type="button" class="btn small${e.bold ? ' on' : ''}" data-ed="bold" aria-pressed="${e.bold}"><b>N</b>&nbsp;Negrito</button>
+        <button type="button" class="btn small${e.bold ? ' on' : ''}" data-ed="bold" aria-pressed="${e.bold}" title="Negrito"><b>N</b></button>
+        <button type="button" class="btn small${e.italic ? ' on' : ''}" data-ed="italic" aria-pressed="${!!e.italic}" title="Itálico"><i>I</i></button>
       </div>
-      ${swatches('ed-color', e.color, INKS)}
+      ${swatches('ed-color', e.color, INKS, true)}
+      ${from}
       ${actions}</div>`;
   }
   if (e.kind === 'mark') {
@@ -175,12 +204,15 @@ export function initEditPanel(panel: HTMLElement, refresh: () => void): void {
       const k = act === 'bigger' ? 1.15 : 1 / 1.15;
       updateCurrent({ size: Math.max(5, Math.min(144, Math.round(cur.size * k * 2) / 2)) });
     } else if (cur && act === 'bold' && cur.kind === 'text') updateCurrent({ bold: !cur.bold });
+    else if (cur && act === 'italic' && cur.kind === 'text') updateCurrent({ italic: !cur.italic });
   });
 
   panel.addEventListener('change', (ev) => {
     const t = ev.target as HTMLInputElement;
     const cur = st.current?.edit;
-    if (t.name === 'ed-color' && cur) updateCurrent({ color: t.value });
+    if ((t.name === 'ed-color' || t.name === 'ed-color-pick') && cur) updateCurrent({ color: t.value });
+    else if (t.id === 'ed-font' && cur?.kind === 'text')
+      updateCurrent({ font: (t as unknown as HTMLSelectElement).value as FontId });
     else if (t.name === 'ed-cover' && cur) updateCurrent({ color: t.value });
     else if (t.name === 'ed-style' && cur?.kind === 'rect') {
       const style = t.value as RectEdit['style'];

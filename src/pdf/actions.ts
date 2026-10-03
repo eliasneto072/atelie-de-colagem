@@ -2,6 +2,7 @@
 import { renderScale } from '../core/pages';
 import type { BuildOptions, BuildReport, EncodedImage, OutPage, PdfSource } from './build';
 import { hasRedaction } from './edits';
+import { pdfFontFile } from './fontFiles';
 import { MARGIN_PT, opts, type Options } from './options';
 import { redactedPicture } from './paint';
 import { openPdf } from './pdfjs';
@@ -82,6 +83,7 @@ const buildOptions = (title: string): BuildOptions => ({
   title,
   watermark: st.watermark.on ? st.watermark : undefined,
   numbering: st.numbering.on ? st.numbering : undefined,
+  fontFile: pdfFontFile,
 });
 
 function failed(err: unknown): void {
@@ -89,7 +91,7 @@ function failed(err: unknown): void {
   toast('Não consegui gerar o arquivo. Se o PDF for muito grande, tente com menos páginas.');
 }
 
-const CHARS_NOTE = ' Alguns símbolos não existem nas fontes do PDF e saíram como "?".';
+const CHARS_NOTE = ' Alguns símbolos não existem nas fontes e saíram como "?".';
 
 /** One PDF with these pages, in this order. */
 export async function savePdf(pages: readonly Page[], name: string): Promise<void> {

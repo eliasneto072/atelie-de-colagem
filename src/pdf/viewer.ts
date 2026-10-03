@@ -2,8 +2,11 @@
  * "Editar e assinar": pages shown large, one under the other, with the person's edits on top.
  * Edits are HTML elements over each page while editing; the builder draws them into the PDF.
  */
+import { lineNear, type FontId } from '../core/fonts';
 import { pageToView, viewSize, viewToPage, type Rot } from '../core/pages';
-import { LINE_HEIGHT, type Edit, type MarkEdit, type RectEdit } from './edits';
+import { docLines, lineColor, prefetchDocText } from './docText';
+import { firstBaseline, LINE_HEIGHT, type Edit, type MarkEdit, type RectEdit, type TextEdit } from './edits';
+import { baselineShift, CSS_FAMILY, loadScreenFont, screenFontReady } from './fontFiles';
 import { frameOf, paintPage, type Frame } from './paint';
 import { openSignaturePad } from './signature';
 import { newId, pageRot, remember, st, type Page, type Tool } from './state';
@@ -15,8 +18,8 @@ const listeners: Listener[] = [];
 export const onEditChange = (fn: Listener): void => void listeners.push(fn);
 const changed = () => listeners.forEach((fn) => fn());
 
-/** Last text settings, reused for the next text. */
-export const textStyle = { size: 12, color: '#111111', bold: false };
+/** Last text settings, reused for the next text when there is no document text nearby. */
+export const textStyle = { size: 12, color: '#111111', bold: false, font: 'sans' as FontId, italic: false };
 export const markStyle = { size: 14, color: '#111111' };
 const RECT_COLORS: Record<RectEdit['style'], string> = {
   redact: '#000000',
@@ -38,25 +41,11 @@ interface View {
 const views = new Map<number, View>();
 let editing: { view: View; edit: Edit; el: HTMLElement } | null = null;
 
-// ---- the font the overlay uses: metric-compatible with the PDF's Helvetica ----
-let fontReady: Promise<void> | null = null;
-function loadFont(): Promise<void> {
-  fontReady ??= (async () => {
-    const base = new URL('../pdfjs/standard_fonts/', document.baseURI).href;
-    const faces = [
-      new FontFace('AtelieSans', `url(${base}LiberationSans-Regular.ttf)`, { weight: '400' }),
-      new FontFace('AtelieSans', `url(${base}LiberationSans-Bold.ttf)`, { weight: '700' }),
-    ];
-    await Promise.all(
-      faces.map((f) =>
-        f.load().then(
-          (ff) => document.fonts.add(ff),
-          () => undefined,
-        ),
-      ),
-    );
-  })();
-  return fontReady;
+// ---- the fonts the overlay uses: same letter widths as the PDF's fonts (see fontFiles.ts) ----
+/** Load a font for the screen, then lay this page's texts out again with it. */
+function useFont(font: FontId, page: Page): void {
+  if (screenFontReady(font)) return;
+  void loadScreenFont(font).then(() => refreshPage(page));
 }
 
 // ---- layout ----
@@ -106,6 +95,8 @@ async function paint(view: View): Promise<void> {
   }
   view.canvas.replaceWith(c);
   view.canvas = c;
+  // read the page's text now, so a click can take its font at once
+  prefetchDocText(view.page);
 }
 
 function createView(page: Page): View {
@@ -129,7 +120,7 @@ function createView(page: Page): View {
 
 /** Bring the viewer in line with the pages, their order and their edits. */
 export function renderViewer(): void {
-  void loadFont();
+  void loadScreenFont('sans');
   const root = $('viewer');
   const alive = new Set<number>();
   st.pages.forEach((page, i) => {
@@ -229,10 +220,16 @@ function placeEl(view: View, e: Edit, el: HTMLElement): void {
   el.style.transform = turn ? `rotate(${turn}deg)` : '';
   const s = view.s;
   if (e.kind === 'text') {
+    const font = e.font ?? 'sans';
     el.style.fontSize = `${e.size * s}px`;
     el.style.lineHeight = String(LINE_HEIGHT);
     el.style.color = e.color;
     el.style.fontWeight = e.bold ? '700' : '400';
+    el.style.fontStyle = e.italic ? 'italic' : 'normal';
+    el.style.fontFamily = CSS_FAMILY[font];
+    // the browser's baseline may sit a little off the PDF's: move the letters, not the box
+    (el.firstElementChild as HTMLElement).style.top = `${baselineShift(font) * e.size * s}px`;
+    useFont(font, view.page);
   } else if (e.kind === 'mark') {
     el.style.width = el.style.height = `${e.size * s}px`;
     el.style.color = e.color;
@@ -319,8 +316,10 @@ export function updateCurrent(patch: Partial<Edit>): void {
   if (!cur) return;
   remember();
   Object.assign(cur.edit, patch);
-  if (cur.edit.kind === 'text')
-    Object.assign(textStyle, { size: cur.edit.size, color: cur.edit.color, bold: cur.edit.bold });
+  if (cur.edit.kind === 'text') {
+    const { size, color, bold, font = 'sans', italic = false } = cur.edit;
+    Object.assign(textStyle, { size, color, bold, font, italic });
+  }
   if (cur.edit.kind === 'mark') Object.assign(markStyle, { size: cur.edit.size, color: cur.edit.color });
   refreshPage(cur.page);
   changed();
@@ -460,6 +459,34 @@ function localDelta(view: View, edit: Edit, dx: number, dy: number): [number, nu
   return [(dx * Math.cos(t) - dy * Math.sin(t)) / view.s, (dx * Math.sin(t) + dy * Math.cos(t)) / view.s];
 }
 
+/**
+ * A new text where the person clicked. Near the document's own text it takes that text's
+ * font, size and colour, and on the same line it sits on that line's baseline (filling in
+ * "Nome: ______", say). Elsewhere it uses the last settings.
+ */
+function newText(view: View, px: number, py: number): TextEdit {
+  const f = frameOf(view.page);
+  const s = view.s;
+  const style = { ...textStyle, from: undefined as string | undefined };
+  const near = lineNear(docLines(view.page, f), px / s, py / s);
+  let top = py / s - style.size * 0.6;
+  if (near) {
+    const { line, snap } = near;
+    Object.assign(style, {
+      font: line.style.font,
+      bold: line.style.bold,
+      italic: line.style.italic,
+      size: Math.max(5, Math.min(144, Math.round(line.size * 2) / 2)),
+      from: line.style.family,
+    });
+    const [vw] = viewSize(f.w, f.h, f.rot);
+    style.color = lineColor(view.canvas, line, vw) ?? style.color;
+    top = snap ? line.y - firstBaseline(style.font) * style.size : py / s - style.size * 0.6;
+  }
+  const [x, y] = viewToPage(px - 2, top * s, f.w, f.h, f.rot, s);
+  return { kind: 'text', id: newId(), x, y, rot: f.rot, text: '', ...style };
+}
+
 function place(view: View, px: number, py: number): void {
   const page = view.page;
   const f = frameOf(page);
@@ -468,8 +495,7 @@ function place(view: View, px: number, py: number): void {
   const at = (sx: number, sy: number) => viewToPage(sx, sy, f.w, f.h, rot, s);
   let edit: Edit | null = null;
   if (st.tool === 'text') {
-    const [x, y] = at(px - 2, py - textStyle.size * s * 0.6);
-    edit = { kind: 'text', id: newId(), x, y, rot, text: '', ...textStyle };
+    edit = newText(view, px, py);
   } else if (st.tool === 'check' || st.tool === 'x' || st.tool === 'dot') {
     const size = markStyle.size;
     const [x, y] = at(px - (size * s) / 2, py - (size * s) / 2);
