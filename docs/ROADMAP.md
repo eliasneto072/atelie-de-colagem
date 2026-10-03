@@ -33,9 +33,11 @@ O que vem pela frente, em ordem de prioridade. Sugestões são bem-vindas nas
 - [x] **Cobrir** um trecho para escrever por cima e **marca-texto**
 - [x] **Marca d'água de proteção** ("Cópia para uso exclusivo em…")
 - [x] **Numerar páginas**
+- [x] **Texto na fonte do documento** (0.4): mesma fonte, tamanho e cor, alinhado na linha; Arial,
+      Times New Roman, Courier e Calibri, com negrito e itálico
 - [ ] **Preencher formulários** de PDF (campos de texto, caixas e listas do próprio arquivo)
 
-## PDF, fase 3: avançado (0.4)
+## PDF, fase 3: avançado (0.5)
 
 - **Diminuir o tamanho** para caber nos limites de sites do governo (2 ou 5 MB).
 - **Escanear com o celular:** endireitar a folha e melhorar o contraste.

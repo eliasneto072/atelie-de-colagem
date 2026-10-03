@@ -6,7 +6,17 @@ Todas as mudanças relevantes ficam registradas aqui. O formato segue o
 
 ## [Não lançado]
 
+## [0.4.0] - 2026-10-03
+
+Texto na fonte do documento, guias para a busca e nova licença.
+
 ### Adicionado
+
+- Em "Editar e assinar", o texto novo reconhece a fonte do documento: clicando na linha de um
+  texto, ele sai com a mesma fonte, tamanho, negrito e cor, alinhado na mesma linha. O painel diz
+  qual é a fonte do documento e qual a mais parecida quando ela não está disponível.
+- Fontes para escrever: Arial, Times New Roman, Courier e Calibri (pela Carlito, que tem as mesmas
+  medidas), com negrito e itálico, e qualquer cor.
 
 - Guias para quem chega pela busca: assinar PDF, esconder CPF em PDF, foto para PDF e juntar
   PDF, com passo a passo, imagem da ferramenta, perguntas frequentes e um botão que já abre a
@@ -29,6 +39,8 @@ Todas as mudanças relevantes ficam registradas aqui. O formato segue o
 
 - Com a ferramenta Assinar escolhida e nenhuma assinatura criada, clicar em zoom ou em Desfazer
   abria de novo a janela da assinatura.
+- Um clique rápido na página logo depois de "Usar assinatura" podia abrir a janela de novo ou pôr
+  outro item no lugar da assinatura.
 
 ## [0.3.0] - 2026-10-02
 
@@ -95,7 +107,8 @@ Primeira versão pública.
 - Funciona sem internet depois da primeira visita e pode ser instalado como aplicativo.
 - Páginas de privacidade e termos de uso.
 
-[Não lançado]: https://github.com/eliasneto072/atelie-de-colagem/compare/v0.3.0...HEAD
+[Não lançado]: https://github.com/eliasneto072/atelie-de-colagem/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/eliasneto072/atelie-de-colagem/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/eliasneto072/atelie-de-colagem/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/eliasneto072/atelie-de-colagem/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/eliasneto072/atelie-de-colagem/releases/tag/v0.1.0

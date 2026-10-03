@@ -154,6 +154,9 @@ do editor de imagens.
 | `src/pdf/signature.ts` | A janela da assinatura: desenho ou foto do papel, recortada e com fundo transparente.            |
 | `src/pdf/paint.ts`     | Desenha uma página no canvas e gera a imagem da página com tarja.                                |
 | `src/pdf/options.ts`   | Opções guardadas no aparelho (tamanho de página, margem, formato das imagens).                   |
+| `src/pdf/docText.ts`   | Lê o texto que já está na página (fonte, tamanho, linha) para o texto novo combinar.             |
+| `src/pdf/fontFiles.ts` | As fontes de escrever: arquivos para a tela e para embutir no PDF, e o acerto da linha de base.  |
+| `src/core/fonts.ts`    | Funções puras: reconhecer a fonte pelo nome, achar a linha do clique e a cor da tinta.           |
 | `src/pdf/route.ts`     | Links que abrem uma tarefa e, em "Editar e assinar", uma ferramenta: `#editar/tarja`.            |
 | `src/core/pages.ts`    | Funções puras: intervalos, tamanho de página, encaixe da foto e a geometria das páginas giradas. |
 
@@ -177,11 +180,23 @@ Decisões:
   item acompanha a página se ela for girada depois, e o mesmo dado serve para desenhar na tela e
   no arquivo. As conversões entre tela e página para os quatro giros ficam em `src/core/pages.ts`
   (`pageToView`, `viewToPage`, `screenAxes`) e têm testes de ida e volta.
-- **O que se vê é o que sai.** A tela usa a Liberation Sans, que tem exatamente as medidas da
-  Helvetica usada no PDF, e a mesma altura de linha e posição da primeira linha de base
-  (`FIRST_BASELINE`). Os testes leem o PDF gerado com o pdf.js e conferem a posição do texto em
-  páginas giradas. Caracteres que a Helvetica padrão não tem (fora do WinAnsi) saem como "?", e
-  o aviso aparece no fim.
+- **O que se vê é o que sai.** A tela escreve com fontes que têm as mesmas larguras de letra das
+  fontes do PDF (veja abaixo), com a mesma altura de linha e a mesma primeira linha de base. Os
+  testes leem o PDF gerado com o pdf.js e conferem a posição do texto em páginas giradas e em
+  cada fonte. Caracteres que a fonte não tem (fora do WinAnsi nas fontes padrão do PDF) saem como
+  "?", e o aviso aparece no fim.
+- **Texto na fonte do documento.** O pdf.js dá, para cada trecho de texto da página, o nome da
+  fonte ("TimesNewRomanPSMT", "ABCDEF+Calibri-Bold"), o tamanho e a linha de base.
+  `recognizeFont` leva o nome para uma das quatro fontes do editor e `lineNear` acha a linha do
+  clique. A cor vem dos pixels da página já desenhada. Cada fonte tem um par com as mesmas
+  larguras de letra: Helvetica no PDF e Arimo na tela (Arial), Times e Tinos (Times New Roman),
+  Courier e Cousine, e Carlito (Calibri), que vai embutida no PDF, só com as letras usadas,
+  pelo `@cantoo/fontkit`. Os arquivos ficam em `assets/pdf/` e entram no cache do modo sem
+  internet junto com o resto do PDF.
+- **Linha de base igual na tela e no PDF.** O modelo guarda o topo da caixa do texto, e
+  `firstBaseline(fonte)` diz onde fica a primeira linha de base, pelas medidas da fonte. Como
+  cada navegador usa medidas um pouco diferentes, `fontFiles.ts` mede onde o navegador põe a
+  linha de base e corrige a posição das letras na tela pela diferença.
 - **Tarja apaga de verdade.** Cobrir com um retângulo preto deixa o texto embaixo, que pode ser
   copiado. Por isso a página com tarja é desenhada a 200 dpi com as faixas já pintadas e o PDF
   recebe só essa imagem no lugar da página. As outras páginas continuam sendo copiadas sem perda.
@@ -192,8 +207,7 @@ Decisões:
   baixa nada de PDF). Ao abrir `/pdf/`, a página pede ao service worker (mensagem `cache-pdf`)
   para guardar a lista de arquivos de PDF que o build escreveu nele. Os decodificadores de imagens
   escaneadas e as fontes padrão do pdf.js (`/pdfjs/`) são baixados e guardados só quando um PDF
-  precisa deles; a exceção são as duas Liberation Sans que o editor usa para escrever, que entram
-  na lista.
+  precisa deles.
 
 ## Guias (`/assinar-pdf/`, `/esconder-cpf-pdf/`, `/foto-para-pdf/`, `/juntar-pdf/`)
 

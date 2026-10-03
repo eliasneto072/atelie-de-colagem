@@ -151,8 +151,13 @@ troca para as ferramentas de escrever. O que você põe na página aparece exata
 no arquivo.
 
 - **Texto:** clique onde quer escrever e digite. Enter pula linha; clique fora para terminar.
-  Dois cliques num texto voltam a editá-lo. No painel: tamanho da letra (A− e A+), negrito e cor
-  (preto, azul ou vermelho).
+  Dois cliques num texto voltam a editá-lo.
+  - **Na fonte do documento:** clicando na mesma linha de um texto do documento (por exemplo, no
+    espaço depois de "Nome: ______"), o texto novo sai com a mesma fonte, tamanho, negrito e cor,
+    alinhado na linha. Perto de um texto, ele pega só o estilo. O painel mostra qual é a fonte do
+    documento e, se ela não for uma das que o Ateliê tem, qual é a mais parecida.
+  - **No painel:** fonte (Arial, Times New Roman, Courier ou Calibri), tamanho (A− e A+), negrito,
+    itálico e cor (preto, azul, vermelho, a cor do documento ou qualquer outra).
 - **Certo, X e Ponto:** clique nas caixinhas do formulário para marcar.
 - **Assinar:** na primeira vez, abre a janela da assinatura. Desenhe com o dedo ou o mouse, em
   tinta preta ou azul, ou escolha **Foto** e use a foto de uma assinatura feita no papel (o papel
