@@ -210,6 +210,16 @@ fica em `src/styles/guia.css`.
 - Toda página nova precisa entrar em `public/sitemap.xml`. Um teste compara o sitemap com as
   páginas do build e confere título, descrição, endereço canônico e imagens de cada uma.
 
+## Contagem de visitas
+
+O plugin `analytics()` em `vite.config.ts` põe em todas as páginas do build um script curto que
+carrega o [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/) **só quando o
+endereço é `ateliedecolagem.com.br`**. Assim, o desenvolvimento local, a prévia e os testes nunca
+contam como visita (um teste confere que nenhum pedido sai para a Cloudflare). A opção
+`"spa": false` evita que a troca de tarefa em `/pdf/`, que muda o `#` do endereço, conte como
+uma visita nova. A contagem não usa cookies nem armazenamento no aparelho; o que ela mede está em
+`privacidade.html`.
+
 ## Regra de importação
 
 Os módulos de `editor/` e `ui/` dependem uns dos outros em ciclo (a ferramenta chama o painel,

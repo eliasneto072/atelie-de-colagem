@@ -9,7 +9,7 @@ O que vem pela frente, em ordem de prioridade. Sugestões são bem-vindas nas
 - [x] Modo sem internet e instalação como aplicativo
 - [x] Páginas de privacidade e termos
 - [x] Domínio ateliedecolagem.com.br no ar, com HTTPS
-- [ ] Cadastro no Google Search Console (em verificação) e no Bing
+- [x] Cadastro no Google Search Console e no Bing, com o sitemap enviado
 - [ ] Link no site da Vértice
 
 ## PDF, fase 1: organizar (0.2) ✔
@@ -70,7 +70,7 @@ O que vem pela frente, em ordem de prioridade. Sugestões são bem-vindas nas
       [juntar PDF](https://ateliedecolagem.com.br/juntar-pdf/)
 - [ ] Mais guias: separar PDF, PDF para imagem, numerar páginas, marca d'água em documento,
       remover texto de imagem, tirar fundo branco de logo
-- [ ] Contador de visitas sem cookies (Cloudflare Web Analytics ou GoatCounter)
+- [x] Contador de visitas sem cookies (Cloudflare Web Analytics)
 - Versões em inglês e espanhol.
 - Melhorias de acessibilidade: navegação completa por teclado e leitores de tela no painel.
 

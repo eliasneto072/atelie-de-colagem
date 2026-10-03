@@ -13,6 +13,8 @@ Todas as mudanças relevantes ficam registradas aqui. O formato segue o
   tarefa certa. Links para eles na página de PDF e na janela Sobre.
 - Links que abrem uma ferramenta de "Editar e assinar": `/pdf/#editar/tarja`,
   `/pdf/#editar/assinar` e os demais nomes da barra.
+- Contagem de visitas com o Cloudflare Web Analytics: agregada, sem cookies e só no domínio
+  oficial. A página de privacidade explica o que é contado.
 
 ### Corrigido
 

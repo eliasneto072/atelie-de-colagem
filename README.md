@@ -55,8 +55,9 @@ O passo a passo de cada ferramenta e os atalhos estão no [Guia de uso](docs/GUI
 ## Privacidade
 
 Todo o processamento acontece no navegador. Não há servidor que receba imagens ou PDFs, não há contas,
-anúncios, cookies de rastreamento nem serviços de terceiros (as fontes são servidas pelo próprio
-site). Detalhes em [privacidade.html](privacidade.html).
+anúncios nem cookies de rastreamento, e as fontes são servidas pelo próprio site. As visitas são
+contadas de forma agregada e sem cookies pelo Cloudflare Web Analytics, só no domínio oficial.
+Detalhes em [privacidade.html](privacidade.html).
 
 ## Rodar no seu computador
 
