@@ -284,6 +284,22 @@ a {
   height: 18px;
   flex: none;
 }
+.guides {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 14px;
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: rgba(238, 242, 236, 0.6);
+}
+.guides a {
+  color: rgba(238, 242, 236, 0.88);
+  text-underline-offset: 2px;
+}
+.guides a:hover {
+  color: #fff;
+}
 
 /* toolbar over the pages */
 .toolbar {

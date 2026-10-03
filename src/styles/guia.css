@@ -1,0 +1,433 @@
+/* Guide pages ("Assinar PDF", "Esconder CPF em PDF"…): one readable column, a wide screenshot,
+   numbered steps, questions and a button into the tool. Same palette and type as the app. */
+@import '@fontsource/bricolage-grotesque/latin-700.css';
+@import '@fontsource/bricolage-grotesque/latin-800.css';
+@import '@fontsource/instrument-sans/latin-400.css';
+@import '@fontsource/instrument-sans/latin-600.css';
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 17px/1.65 var(--f-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---- top bar ---- */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand b {
+  font: 800 23px/1 var(--f-display);
+  letter-spacing: -0.02em;
+}
+
+.brand span {
+  font: 700 14px/1 var(--f-display);
+  color: var(--muted);
+}
+
+.top-link {
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--fg);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.top-link:hover {
+  border-color: var(--muted);
+}
+
+/* ---- the column, with room for wide pictures ---- */
+main {
+  display: grid;
+  grid-template-columns: 1fr min(44rem, 100% - 32px) 1fr;
+  padding-bottom: 24px;
+}
+
+main > * {
+  grid-column: 2;
+}
+
+main > .wide {
+  grid-column: 1 / -1;
+  width: min(62rem, 100% - 32px);
+  justify-self: center;
+}
+
+.crumbs {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.crumbs a {
+  color: inherit;
+}
+
+.eyebrow {
+  margin: 28px 0 0;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 10px 0 14px;
+  font: 800 clamp(32px, 6.4vw, 52px) / 1.04 var(--f-display);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.lede {
+  margin: 0;
+  font-size: 19px;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin: 26px 0 8px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 0 24px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 18px var(--accent-soft);
+  transition: filter 0.12s;
+}
+
+.button:hover {
+  filter: brightness(1.07);
+}
+
+.button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.safe {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.safe svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+/* ---- screenshot ---- */
+.shot {
+  margin: 36px 0 12px;
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  background: var(--panel);
+}
+
+.shot figcaption {
+  max-width: 44rem;
+  margin: 12px auto 0;
+  color: var(--muted);
+  font-size: 15px;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* ---- sections ---- */
+h2 {
+  margin: 52px 0 14px;
+  font: 700 clamp(24px, 3.6vw, 30px) / 1.15 var(--f-display);
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+h3 {
+  margin: 26px 0 6px;
+  font-size: 18px;
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+ul {
+  padding-left: 1.2em;
+}
+
+li + li {
+  margin-top: 8px;
+}
+
+li::marker {
+  color: var(--accent);
+}
+
+/* numbered steps */
+.steps {
+  counter-reset: step;
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+}
+
+.steps > li {
+  counter-increment: step;
+  position: relative;
+  padding: 0 0 0 52px;
+  min-height: 36px;
+}
+
+.steps > li + li {
+  margin-top: 18px;
+}
+
+.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: -1px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font: 800 16px/1 var(--f-display);
+}
+
+.steps strong {
+  display: block;
+}
+
+.note {
+  margin: 22px 0;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.note p {
+  margin: 0;
+}
+
+.note p + p {
+  margin-top: 8px;
+}
+
+/* ---- questions ---- */
+.faq {
+  margin-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.faq details {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq summary {
+  position: relative;
+  padding: 16px 40px 16px 0;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq summary::after {
+  content: '+';
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent);
+  font: 400 26px/1 var(--f-ui);
+}
+
+.faq details[open] summary::after {
+  content: '−';
+}
+
+.faq details p {
+  margin: 0 0 18px;
+  color: var(--fg);
+}
+
+/* ---- other tools ---- */
+.more {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.more li + li {
+  margin: 0;
+}
+
+.more a {
+  display: block;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--fg);
+  text-decoration: none;
+  transition: border-color 0.12s;
+}
+
+.more a:hover {
+  border-color: var(--accent);
+}
+
+.more b {
+  display: block;
+  font: 700 18px/1.25 var(--f-display);
+}
+
+.more span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+/* ---- closing call ---- */
+.end {
+  margin-top: 56px;
+  padding: 28px 24px;
+  border-radius: 16px;
+  background: var(--mat);
+  color: #eef2ec;
+  text-align: center;
+}
+
+.end h2 {
+  margin: 0 0 6px;
+}
+
+.end p {
+  margin: 0 0 18px;
+  color: rgba(238, 242, 236, 0.82);
+}
+
+footer {
+  max-width: 64rem;
+  margin: 24px auto 0;
+  padding: 18px 16px 32px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+footer a {
+  color: inherit;
+}
+
+@media (max-width: 560px) {
+  body {
+    font-size: 16px;
+  }
+
+  .lede {
+    font-size: 17px;
+  }
+
+  .top-link {
+    padding: 6px 11px;
+    font-size: 13px;
+  }
+
+  .brand span {
+    display: none;
+  }
+
+  .button {
+    width: 100%;
+  }
+
+  .steps > li {
+    padding-left: 46px;
+  }
+
+  .shot img {
+    border-radius: 10px;
+  }
+}

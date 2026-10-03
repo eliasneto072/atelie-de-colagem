@@ -23,6 +23,10 @@ const PUBLIC_OFFLINE = [
  * the image editor doesn't download ~1 MB of PDF code; the PDF page asks the service worker
  * to keep them (see the 'cache-pdf' message in public/sw.js).
  */
+/** Guide pages that explain a task and link into the tool (also listed in public/sitemap.xml). */
+const GUIDES = ['assinar-pdf', 'esconder-cpf-pdf', 'foto-para-pdf', 'juntar-pdf'];
+const GUIDE_PAGE = new RegExp(`^(${GUIDES.join('|')})/index\\.html$`);
+
 const PDF_ONLY = /^(assets\/pdf\/|pdfjs\/|pdf\/)/;
 const EDITOR_FONTS = /^pdfjs\/standard_fonts\/LiberationSans-(Regular|Bold)\.ttf$/;
 
@@ -44,7 +48,8 @@ function serviceWorkerManifest(): Plugin {
         if (name.endsWith('.map')) continue;
         hash.update(name).update(item.type === 'chunk' ? item.code : item.source);
         // every browser that runs the editor reads woff2; plain woff stays a runtime fallback
-        if (name.endsWith('.woff') || name === 'index.html') continue;
+        // the guides are pages to read online, not part of the app that works offline
+        if (name.endsWith('.woff') || name === 'index.html' || GUIDE_PAGE.test(name)) continue;
         if (!PDF_ONLY.test(name)) files.push(name);
         // pdf.js's decoders and fonts are fetched (and then kept) only by PDFs that need them,
         // except the Helvetica look-alikes the editor writes with
@@ -129,6 +134,7 @@ export default defineConfig({
         privacidade: resolve(root, 'privacidade.html'),
         termos: resolve(root, 'termos.html'),
         pdf: resolve(root, 'pdf/index.html'),
+        ...Object.fromEntries(GUIDES.map((g) => [g, resolve(root, g, 'index.html')])),
       },
       output: {
         // PDF-only code goes to assets/pdf/ so the service worker can tell it apart
