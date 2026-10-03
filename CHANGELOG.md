@@ -16,6 +16,15 @@ Todas as mudanças relevantes ficam registradas aqui. O formato segue o
 - Contagem de visitas com o Cloudflare Web Analytics: agregada, sem cookies e só no domínio
   oficial. A página de privacidade explica o que é contado.
 
+### Mudado
+
+- Licença: o código passa da MIT para a Functional Source License 1.1 com licença futura MIT
+  (FSL-1.1-MIT), em nome de Elias Neto (Vértice). Pode ser usado e modificado para qualquer fim
+  que não seja oferecer um produto ou serviço concorrente, e cada versão vira MIT depois de 2 anos.
+  As versões anteriores continuam MIT.
+- O site deixa de mostrar links de código aberto; os termos de uso explicam a quem pertencem o
+  site, o código e a marca.
+
 ### Corrigido
 
 - Com a ferramenta Assinar escolhida e nenhuma assinatura criada, clicar em zoom ou em Desfazer

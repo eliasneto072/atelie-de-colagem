@@ -1,7 +1,7 @@
 # Ateliê de Colagem
 
 [![CI](https://github.com/eliasneto072/atelie-de-colagem/actions/workflows/ci.yml/badge.svg)](https://github.com/eliasneto072/atelie-de-colagem/actions/workflows/ci.yml)
-[![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-f2b13f)](LICENSE)
+[![Licença FSL-1.1-MIT](https://img.shields.io/badge/licen%C3%A7a-FSL--1.1--MIT-f2b13f)](LICENSE)
 
 Editor de imagens e ferramentas de PDF no navegador: recorte, cole e junte imagens, remova
 letras e objetos refazendo o fundo, troque cores, e junte, separe, organize, escreva e assine
@@ -127,12 +127,19 @@ Os próximos passos planejados estão no [roadmap](docs/ROADMAP.md).
 
 ## Licença
 
-Código sob a [licença MIT](LICENSE): pode usar, copiar, modificar e distribuir, inclusive em
-projetos comerciais, desde que o aviso de copyright e a licença acompanhem as cópias. O software é
-fornecido sem garantia.
+O Ateliê de Colagem é de Elias Neto (Vértice). O código está publicado sob a
+[Functional Source License 1.1, com licença futura MIT](LICENSE) (FSL-1.1-MIT):
 
-A licença cobre o código. O nome "Ateliê de Colagem", o nome "Vértice" e as identidades visuais
-não fazem parte dela.
+- **Pode:** ler, estudar, usar, modificar e redistribuir o código para qualquer fim que não seja
+  concorrer com o Ateliê de Colagem, como uso interno, estudo, pesquisa e contribuições.
+- **Não pode:** usar o código para oferecer a outras pessoas um produto ou serviço comercial igual
+  ou parecido.
+- **Depois de 2 anos:** cada versão passa a valer também sob a licença MIT, sem restrições.
+
+As versões publicadas até 3 de outubro de 2026 (até a 0.3.0 e os guias publicados logo depois)
+saíram sob a licença MIT e continuam valendo assim para quem as obteve.
+
+A licença não inclui os nomes "Ateliê de Colagem" e "Vértice" nem as identidades visuais.
 
 ---
 

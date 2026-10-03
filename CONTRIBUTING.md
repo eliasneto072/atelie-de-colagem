@@ -47,7 +47,8 @@ Estes pontos valem mais que qualquer recurso novo:
 - **A imagem não sai do aparelho.** Nada de enviar imagens para servidores, APIs ou serviços de
   terceiros. Recursos que precisariam disso não entram, ou rodam no próprio navegador.
 - **Sem rastreamento.** Nada de analytics com cookies, pixels de anúncio ou fontes e scripts
-  carregados de outros domínios.
+  carregados de outros domínios. A única exceção é o contador de visitas sem cookies da
+  Cloudflare, que só roda no domínio oficial (veja `docs/ARQUITETURA.md`).
 - **Sem cadastro e sem marca d'água.**
 - **Funciona no celular.** Toda ferramenta precisa funcionar com o dedo, não só com mouse e
   teclado.
@@ -79,5 +80,7 @@ com semente fixa, então os resultados se repetem e servem de comparação.
 
 ## Licença das contribuições
 
-Ao enviar uma contribuição, você concorda que ela seja distribuída sob a [licença MIT](LICENSE)
-do projeto.
+Ao enviar uma contribuição, você concorda que ela seja distribuída sob a licença do projeto
+([FSL-1.1-MIT](LICENSE)) e que Elias Neto (Vértice), responsável pelo projeto, possa também
+distribuí-la sob outras condições, por exemplo numa versão comercial. Você continua sendo autor do
+que escreveu.
