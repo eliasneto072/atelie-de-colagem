@@ -161,4 +161,60 @@ test.describe('editar PDF no computador', () => {
     await expect(page.locator('#sig-dialog')).toBeHidden();
     await expect(page.locator('#ed-zoom')).toHaveText('80%');
   });
+
+  test('escreve com a fonte, o tamanho e a cor do documento, na mesma linha', async ({ page }) => {
+    await page.goto('./pdf/#editar/texto');
+    await addFiles(page, ['fontes.pdf'], 1);
+    // the page is drawn and its text read before the first click
+    await expect(page.locator('.vsheet canvas')).toHaveJSProperty('width', Math.round(595.28 * S * 1));
+    await page.waitForTimeout(400);
+    const H = 841.89;
+    /** Click a little above a line's baseline, `x` points from the left, and type. */
+    const write = async (x: number, baseline: number, text: string) => {
+      const p = await sheetPoint(page, x * S, (H - baseline) * S - 4);
+      await page.mouse.click(p.x, p.y);
+      await page.keyboard.type(text);
+    };
+
+    await write(72 + 41.6 + 40, 760, 'Maria Silva');
+    await expect(page.locator('#ed-font')).toHaveValue('serif');
+    await expect(page.locator('.size-val')).toHaveText('14 pt');
+    await expect(page.locator('.hint.from')).toContainText('Igual ao documento: Times');
+    await page.keyboard.press('Escape');
+
+    await write(72 + 72.6 + 20, 720, '2026/123');
+    await expect(page.locator('#ed-font')).toHaveValue('mono');
+    await expect(page.locator('.size-val')).toHaveText('11 pt');
+    await page.keyboard.press('Escape');
+
+    await write(72 + 46.9 + 30, 680, 'Fortaleza');
+    await expect(page.locator('#ed-font')).toHaveValue('sans');
+    await expect(page.locator('[data-ed=bold]')).toHaveAttribute('aria-pressed', 'true');
+    await page.keyboard.press('Escape');
+
+    await write(72 + 74 + 30, 640, 'Tudo certo');
+    await expect(page.locator('#ed-font')).toHaveValue('calibri');
+    await expect(page.locator('.size-val')).toHaveText('13 pt');
+    // the blue of the document, not the default black
+    const color = await page.locator('input[name=ed-color]:checked').inputValue();
+    const [r, , b] = [1, 3, 5].map((i) => parseInt(color.slice(i, i + 2), 16));
+    expect(b - r).toBeGreaterThan(80);
+    await page.keyboard.press('Escape');
+
+    const [first] = await readText((await downloadFrom(page)).bytes);
+    const item = (str: string) => first.items.find((i) => i.str.startsWith(str))!;
+    for (const [mine, label, size, font] of [
+      ['Maria Silva', 'Nome:', 14, /^Times-Roman$/],
+      ['2026/123', 'Protocolo:', 11, /^Courier$/],
+      ['Fortaleza', 'Cidade:', 12, /^Helvetica-Bold$/],
+      ['Tudo certo', 'Observa', 13, /Carlito/],
+    ] as const) {
+      const a = item(mine),
+        b = item(label);
+      expect(a.font).toMatch(font);
+      expect(a.size).toBeCloseTo(size, 1);
+      // on the same baseline as the document's line
+      expect(Math.abs(a.sy - b.sy)).toBeLessThan(0.6);
+    }
+  });
 });

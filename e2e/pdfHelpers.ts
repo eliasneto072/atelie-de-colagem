@@ -64,13 +64,15 @@ export async function readText(bytes: Uint8Array) {
   const fonts = resolve(import.meta.dirname, '../node_modules/pdfjs-dist/standard_fonts/') + '/';
   const doc = await getDocument({ data: bytes.slice(), standardFontDataUrl: fonts }).promise;
   const pages: {
-    items: { str: string; sx: number; sy: number; dx: number; dy: number; size: number }[];
+    items: { str: string; sx: number; sy: number; dx: number; dy: number; size: number; font: string }[];
     images: number;
   }[] = [];
   for (let i = 1; i <= doc.numPages; i++) {
     const p = await doc.getPage(i);
     const vp = p.getViewport({ scale: 1 });
     const tc = await p.getTextContent();
+    // the fonts' names arrive with the drawing instructions
+    const ops = await p.getOperatorList();
     const items = [];
     for (const it of tc.items) {
       if (!('str' in it) || !it.str) continue;
@@ -79,9 +81,11 @@ export async function readText(bytes: Uint8Array) {
       const size = Math.hypot(a, b);
       // one point along the text's baseline, on screen: (1, 0) when it reads left to right
       const [tx, ty] = vp.convertToViewportPoint(e + a / size, f + b / size);
-      items.push({ str: it.str, sx, sy, dx: tx - sx, dy: ty - sy, size });
+      const font = p.commonObjs.has(it.fontName)
+        ? ((p.commonObjs.get(it.fontName) as { name?: string }).name ?? '')
+        : '';
+      items.push({ str: it.str, sx, sy, dx: tx - sx, dy: ty - sy, size, font });
     }
-    const ops = await p.getOperatorList();
     const { OPS } = await import('pdfjs-dist/legacy/build/pdf.mjs');
     const images = ops.fnArray.filter(
       (fn) => fn === OPS.paintImageXObject || fn === OPS.paintInlineImageXObject,
