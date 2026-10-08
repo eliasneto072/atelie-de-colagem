@@ -20,6 +20,18 @@ const GUIDES: Record<string, { task: string; tool?: string }> = {
   'juntar-pdf': { task: 'juntar' },
 };
 
+test('os ícones do site existem', async ({ request }) => {
+  for (const [file, type] of [
+    ['favicon.ico', /icon/],
+    ['favicon-96x96.png', /png/],
+    ['favicon.svg', /svg/],
+  ] as const) {
+    const r = await request.get(`./${file}`);
+    expect(r.ok(), file).toBe(true);
+    expect(r.headers()['content-type'], file).toMatch(type);
+  }
+});
+
 test('o sitemap tem todas as páginas do site', () => {
   const dist = resolve(import.meta.dirname, '../dist');
   const pages: string[] = [];
@@ -61,6 +73,12 @@ for (const url of urls) {
     expect(description?.length).toBeGreaterThan(50);
     expect(description?.length).toBeLessThan(170);
     await expect(page.locator('link[rel=canonical]')).toHaveAttribute('href', url);
+    // buscadores mostram o ícone ao lado do resultado: .ico e PNG, além do SVG
+    const icons = await page
+      .locator('link[rel=icon]')
+      .evaluateAll((ls) => ls.map((l) => l.getAttribute('href')));
+    expect(icons.some((h) => h?.endsWith('favicon.ico'))).toBe(true);
+    expect(icons.some((h) => h?.endsWith('.png'))).toBe(true);
     // every picture with a source has a description and loaded (the editor's export preview has none yet)
     for (const img of await page.locator('img[src]').all()) {
       expect(await img.getAttribute('alt')).not.toBeNull();
