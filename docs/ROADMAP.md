@@ -10,7 +10,7 @@ O que vem pela frente, em ordem de prioridade. Sugestões são bem-vindas nas
 - [x] Páginas de privacidade e termos
 - [x] Domínio ateliedecolagem.com.br no ar, com HTTPS
 - [x] Cadastro no Google Search Console e no Bing, com o sitemap enviado
-- [ ] Link no site da Vértice
+- [ ] Link no site da Megora (megora.com.br), junto com os outros trabalhos
 
 ## PDF, fase 1: organizar (0.2) ✔
 

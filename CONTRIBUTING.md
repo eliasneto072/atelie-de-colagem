@@ -81,6 +81,6 @@ com semente fixa, então os resultados se repetem e servem de comparação.
 ## Licença das contribuições
 
 Ao enviar uma contribuição, você concorda que ela seja distribuída sob a licença do projeto
-([FSL-1.1-MIT](LICENSE)) e que Elias Neto (Vértice), responsável pelo projeto, possa também
+([FSL-1.1-MIT](LICENSE)) e que Elias Neto (Megora), responsável pelo projeto, possa também
 distribuí-la sob outras condições, por exemplo numa versão comercial. Você continua sendo autor do
 que escreveu.

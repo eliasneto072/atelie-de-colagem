@@ -127,7 +127,7 @@ Os próximos passos planejados estão no [roadmap](docs/ROADMAP.md).
 
 ## Licença
 
-O Ateliê de Colagem é de Elias Neto (Vértice). O código está publicado sob a
+O Ateliê de Colagem é de Elias Neto (Megora). O código está publicado sob a
 [Functional Source License 1.1, com licença futura MIT](LICENSE) (FSL-1.1-MIT):
 
 - **Pode:** ler, estudar, usar, modificar e redistribuir o código para qualquer fim que não seja
@@ -139,8 +139,8 @@ O Ateliê de Colagem é de Elias Neto (Vértice). O código está publicado sob 
 As versões publicadas até 3 de outubro de 2026 (até a 0.3.0 e os guias publicados logo depois)
 saíram sob a licença MIT e continuam valendo assim para quem as obteve.
 
-A licença não inclui os nomes "Ateliê de Colagem" e "Vértice" nem as identidades visuais.
+A licença não inclui os nomes "Ateliê de Colagem" e "Megora" nem as identidades visuais.
 
 ---
 
-Feito pela [Vértice](https://eliasneto072.github.io/vertice/).
+Feito pela [Megora](https://megora.com.br/).

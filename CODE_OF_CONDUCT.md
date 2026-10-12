@@ -28,7 +28,7 @@ bloquear quem desrespeitar este código, de forma temporária ou permanente, con
 
 ## Como avisar
 
-Se algo te incomodou, fale com a equipe da [Vértice](https://eliasneto072.github.io/vertice/),
+Se algo te incomodou, fale com a equipe da [Megora](https://megora.com.br/),
 responsável pelo projeto. Sempre que possível, prefira um canal privado. As denúncias são
 tratadas com sigilo.
 

@@ -76,7 +76,7 @@ O build usa caminhos relativos (`base: './'` no `vite.config.ts`), então funcio
   alimenta outros buscadores.
 - **Prévia de links:** teste o endereço no depurador de compartilhamento do Facebook e no
   WhatsApp para ver se a imagem `og-image.png` aparece.
-- **Site da Vértice:** adicione um link para `https://ateliedecolagem.com.br` com um texto que
+- **Site da Megora:** adicione um link para `https://ateliedecolagem.com.br` com um texto que
   descreva o que o editor faz (ajuda a busca e quem chega pelo site).
 
 ## 4. Lançar uma versão

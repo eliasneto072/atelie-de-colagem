@@ -16,7 +16,7 @@ Use o relato privado do GitHub: na aba **Security** do repositório, clique em
 - como reproduzir (navegador, aparelho, passos, arquivo de exemplo, se houver);
 - se já viu a falha sendo explorada.
 
-Se não conseguir usar o relato privado, fale com a [Vértice](https://eliasneto072.github.io/vertice/)
+Se não conseguir usar o relato privado, fale com a [Megora](https://megora.com.br/)
 e pediremos os detalhes por um canal privado.
 
 ## O que esperar

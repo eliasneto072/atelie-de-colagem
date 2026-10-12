@@ -13,6 +13,11 @@ Todas as mudanças relevantes ficam registradas aqui. O formato segue o
 - Nome do site ("Ateliê de Colagem") nos dados estruturados da página inicial, para os buscadores
   mostrarem o nome em vez do endereço.
 
+### Mudado
+
+- A empresa responsável mudou de nome: de Vértice para Megora ([megora.com.br](https://megora.com.br)).
+  Rodapés, termos, privacidade e licença usam o nome novo.
+
 ## [0.4.0] - 2026-10-03
 
 Texto na fonte do documento, guias para a busca e nova licença.
