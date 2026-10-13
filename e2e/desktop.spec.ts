@@ -24,7 +24,7 @@ test.describe('editor no computador', () => {
     await expect(page.locator('#st-doc')).toContainText('1400 × 880');
     await page.locator('#btn-about').click();
     await expect(page.locator('#about-version')).toHaveText(/versão \d+\.\d+\.\d+/);
-    await expect(page.locator('#modal-about a[href="./privacidade.html"]')).toBeVisible();
+    await expect(page.locator('#modal-about a[href="../privacidade.html"]')).toBeVisible();
   });
 
   test('mantém só a seleção, move, estica e alinha', async ({ page }) => {
@@ -96,7 +96,7 @@ test.describe('editor no computador', () => {
   test('continua funcionando sem internet', async ({ page }) => {
     const server = await serveDist();
     try {
-      await page.goto(server.url);
+      await page.goto(server.url + 'imagens/');
       await expect(page.locator('#layer-list .layer')).toHaveCount(2);
       await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
       // wait until the whole build is cached
@@ -116,5 +116,15 @@ test.describe('editor no computador', () => {
     await expect(page.locator('#layer-list .layer')).toHaveCount(2);
     await page.goto(server.url + 'privacidade.html');
     await expect(page.locator('h1')).toHaveText('Privacidade');
+    // the home page and its pictures too
+    await page.goto(server.url);
+    await expect(page.locator('.tool')).toHaveCount(2);
+    await expect
+      .poll(() =>
+        page
+          .locator('.tool img')
+          .evaluateAll((imgs) => imgs.every((i) => (i as HTMLImageElement).naturalWidth > 0)),
+      )
+      .toBe(true);
   });
 });

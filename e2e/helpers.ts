@@ -12,7 +12,7 @@ export function watchErrors(page: Page): string[] {
 
 /** Open the editor and wait until the example is on screen. */
 export async function openEditor(page: Page): Promise<void> {
-  await page.goto('./');
+  await page.goto('./imagens/');
   await expect(page.locator('#layer-list .layer')).toHaveCount(2);
   await page.evaluate(() => document.fonts.ready);
 }

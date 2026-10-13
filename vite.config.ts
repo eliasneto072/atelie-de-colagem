@@ -7,10 +7,15 @@ import { defineConfig } from 'vitest/config';
 const root = import.meta.dirname;
 const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8')) as { version: string };
 
-/** Files from public/ the editor needs offline (og-image, robots and sitemap are only for crawlers). */
+/** Files from public/ the app needs offline (og-image, robots and sitemap are only for crawlers). */
 const PUBLIC_OFFLINE = [
   'manifest.webmanifest',
+  // pictures on the home page
+  'home/editor.webp',
+  'guias/assinar-pdf.webp',
   'favicon.svg',
+  'favicon.ico',
+  'favicon-96x96.png',
   'icons/icon.svg',
   'icons/icon-192.png',
   'icons/icon-512.png',
@@ -49,7 +54,8 @@ function serviceWorkerManifest(): Plugin {
         // every browser that runs the editor reads woff2; plain woff stays a runtime fallback
         // the guides are pages to read online, not part of the app that works offline
         if (name.endsWith('.woff') || name === 'index.html' || GUIDE_PAGE.test(name)) continue;
-        if (!PDF_ONLY.test(name)) files.push(name);
+        // pages are cached by their address: imagens/index.html is asked for as imagens/
+        if (!PDF_ONLY.test(name)) files.push(name.replace(/(^|\/)index\.html$/, '$1'));
         // pdf.js's decoders and fonts are fetched (and then kept) only by PDFs that need them
         else if (!name.startsWith('pdfjs/')) pdfFiles.push(name === 'pdf/index.html' ? 'pdf/' : name);
       }
@@ -160,7 +166,8 @@ export default defineConfig({
     chunkSizeWarningLimit: 1400,
     rollupOptions: {
       input: {
-        main: resolve(root, 'index.html'),
+        home: resolve(root, 'index.html'),
+        main: resolve(root, 'imagens/index.html'),
         privacidade: resolve(root, 'privacidade.html'),
         termos: resolve(root, 'termos.html'),
         pdf: resolve(root, 'pdf/index.html'),

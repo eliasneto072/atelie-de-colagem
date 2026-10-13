@@ -3,7 +3,7 @@
  * whole build on the first visit, so the editor keeps working without internet afterwards.
  * Only registered in production builds: in development it would serve stale files.
  *
- * `root` is the site's root relative to the current page ('./' for the editor, '../' for /pdf/).
+ * `root` is the site's root relative to the current page ('../' for /imagens/ and /pdf/).
  */
 export function registerServiceWorker(root = './'): void {
   if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return;

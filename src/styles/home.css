@@ -1,0 +1,188 @@
+/* The home page: the two tools, the common tasks as shortcuts, and why use them.
+   Builds on the guide pages' look (type, colours, column and cards). */
+@import './guia.css';
+
+/* one wide column: the cards and shortcuts line up with the title */
+main {
+  grid-template-columns: 1fr min(62rem, 100% - 32px) 1fr;
+}
+
+main > .wide {
+  grid-column: 2;
+  width: auto;
+  justify-self: stretch;
+}
+
+h1 {
+  max-width: 20ch;
+}
+
+.lede {
+  max-width: 46rem;
+}
+
+.top-nav {
+  display: flex;
+  gap: 6px;
+}
+
+.top-nav a {
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--fg);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.top-nav a:hover {
+  border-color: var(--muted);
+}
+
+/* ---- the two tools ---- */
+.tools {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 34px 0 6px;
+}
+
+.tool {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  color: var(--fg);
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition:
+    border-color 0.12s,
+    transform 0.12s;
+}
+
+.tool:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.tool img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top left;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.tool-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px 20px;
+}
+
+.tool-body b {
+  font: 700 clamp(22px, 2.6vw, 26px) / 1.15 var(--f-display);
+  letter-spacing: -0.015em;
+}
+
+.tool-body span {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.tool-body .go {
+  margin-top: 6px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ---- common tasks ---- */
+.tasks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tasks li + li {
+  margin: 0;
+}
+
+.tasks a {
+  display: block;
+  height: 100%;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--fg);
+  text-decoration: none;
+  transition: border-color 0.12s;
+}
+
+.tasks a:hover {
+  border-color: var(--accent);
+}
+
+.tasks b {
+  display: block;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+.tasks span {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* ---- why ---- */
+.why {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px 28px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.why li + li {
+  margin: 0;
+}
+
+.why b {
+  display: block;
+  margin-bottom: 2px;
+}
+
+@media (max-width: 720px) {
+  .tools {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .top-nav a {
+    padding: 6px 11px;
+    font-size: 13px;
+  }
+
+  .tasks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tasks a {
+    padding: 11px 12px;
+  }
+}

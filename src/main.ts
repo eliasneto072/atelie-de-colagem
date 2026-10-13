@@ -49,4 +49,4 @@ matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => set
 void document.fonts?.ready.then(markOverlay);
 startRenderLoop();
 
-registerServiceWorker();
+registerServiceWorker('../');

@@ -91,6 +91,28 @@ for (const url of urls) {
   });
 }
 
+test('a página inicial leva às duas ferramentas e às tarefas', async ({ page }) => {
+  await page.goto('./');
+  await page
+    .getByRole('link', { name: /Editor de imagens/ })
+    .first()
+    .click();
+  await expect(page).toHaveURL(/\/imagens\/$/);
+  await expect(page.locator('#layer-list .layer')).toHaveCount(2);
+  await page.goto('./');
+  await page
+    .getByRole('link', { name: /Assinar PDF/ })
+    .first()
+    .click();
+  await expect(page).toHaveURL(/\/pdf\/#editar\/assinar$/);
+  await expect(page.locator('[data-task=editar]')).toHaveAttribute('aria-pressed', 'true');
+  // every shortcut opens a task that exists
+  await page.goto('./');
+  const hrefs = await page.locator('.tasks a').evaluateAll((as) => as.map((a) => a.getAttribute('href')!));
+  for (const h of hrefs)
+    expect(h).toMatch(/^\.\/(imagens\/|pdf\/#(juntar|organizar|editar(\/\w+)?|separar|fotos|imagens))$/);
+});
+
 for (const [slug, target] of Object.entries(GUIDES)) {
   test(`guia ${slug}: dados estruturados e botão que abre a ferramenta`, async ({ page }) => {
     await page.goto(`./${slug}/`);

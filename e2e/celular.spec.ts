@@ -21,7 +21,7 @@ test.describe('editor no celular', () => {
   test('mostra o acesso a Sobre, Privacidade e Termos até em telas estreitas', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 740 });
     await page.locator('#btn-about').tap();
-    await expect(page.locator('#modal-about a[href="./termos.html"]')).toBeVisible();
+    await expect(page.locator('#modal-about a[href="../termos.html"]')).toBeVisible();
   });
 
   test('abre o painel pela aba e mantém só a seleção', async ({ page }) => {

@@ -1,7 +1,7 @@
 {
   "name": "Ateliê de Colagem",
   "short_name": "Ateliê",
-  "description": "Recorte, cole e junte imagens, remova letras e objetos refazendo o fundo e troque cores. Grátis e sem cadastro.",
+  "description": "Editor de imagens e ferramentas de PDF no navegador: recorte, remova objetos, junte, assine e separe PDFs. Grátis e sem cadastro.",
   "lang": "pt-BR",
   "dir": "ltr",
   "id": "./",
@@ -11,6 +11,11 @@
   "background_color": "#141716",
   "theme_color": "#141716",
   "categories": ["photo", "graphics", "productivity"],
+  "shortcuts": [
+    { "name": "Editor de imagens", "short_name": "Imagens", "url": "./imagens/" },
+    { "name": "Ferramentas de PDF", "short_name": "PDF", "url": "./pdf/" },
+    { "name": "Assinar PDF", "short_name": "Assinar", "url": "./pdf/#editar/assinar" }
+  ],
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
