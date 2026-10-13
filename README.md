@@ -8,8 +8,9 @@ letras e objetos refazendo o fundo, troque cores, e junte, separe, organize, esc
 PDFs. **Grátis, sem cadastro, sem marca d'água do site**, e os arquivos nunca saem do aparelho de
 quem usa.
 
-**Abrir o editor:** [ateliedecolagem.com.br](https://ateliedecolagem.com.br) · também em
-[eliasneto072.github.io/atelie-de-colagem](https://eliasneto072.github.io/atelie-de-colagem/)
+**No ar em [ateliedecolagem.com.br](https://ateliedecolagem.com.br):** a página inicial leva ao
+[editor de imagens](https://ateliedecolagem.com.br/imagens/) e às
+[ferramentas de PDF](https://ateliedecolagem.com.br/pdf/).
 
 ![Ateliê de Colagem](public/og-image.png)
 
@@ -103,8 +104,10 @@ src/
   workers/     preenchimento do fundo rodando fora da página
   pdf/         ferramentas de PDF (página /pdf/)
   styles/      tokens de cor e estilos
-  main.ts      ponto de entrada
+  main.ts      ponto de entrada do editor de imagens
 public/        ícones, manifest, service worker, robots e sitemap
+index.html     página inicial, com as ferramentas e os atalhos
+imagens/       página do editor de imagens
 pdf/           página das ferramentas de PDF
 *-pdf/         guias (assinar, esconder CPF, foto para PDF, juntar)
 tests/         testes unitários

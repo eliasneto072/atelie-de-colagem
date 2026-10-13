@@ -4,12 +4,24 @@ Como o Ateliê de Colagem funciona por dentro. Leia antes de mexer em algo grand
 
 ## Visão geral
 
-É um aplicativo de uma página, sem servidor e sem framework de interface: TypeScript estrito,
-Canvas 2D e um Web Worker. O [Vite](https://vite.dev) junta tudo em arquivos estáticos que
-qualquer hospedagem serve.
+Um site estático, sem servidor e sem framework de interface: TypeScript estrito, Canvas 2D e um
+Web Worker. O [Vite](https://vite.dev) junta tudo em arquivos que qualquer hospedagem serve.
+
+| Página                            | O que é                                                               |
+| --------------------------------- | --------------------------------------------------------------------- |
+| `index.html`                      | Página inicial: as duas ferramentas, atalhos para tarefas e os guias. |
+| `imagens/index.html`              | O editor de imagens (este diagrama).                                  |
+| `pdf/index.html`                  | As ferramentas de PDF (veja "Ferramentas de PDF" abaixo).             |
+| `*-pdf/index.html`                | Guias para a busca (veja "Guias").                                    |
+| `privacidade.html`, `termos.html` | Textos legais.                                                        |
+
+Os atalhos da página inicial usam os links das tarefas do PDF (`pdf/#juntar`,
+`pdf/#editar/assinar`…). O service worker guarda cada página pelo endereço dela
+(`imagens/index.html` vira `imagens/`), e o manifest tem atalhos para o editor, o PDF e
+"Assinar PDF" no ícone do aplicativo instalado.
 
 ```
-index.html ── src/main.ts ──┬─ editor/   estado, camadas, histórico, ferramentas, desenho
+imagens/index.html ── src/main.ts ──┬─ editor/   estado, camadas, histórico, ferramentas, desenho
                             ├─ ui/       painéis, janelas, avisos
                             ├─ core/     funções puras (testadas)
                             └─ pwa.ts    registra o service worker

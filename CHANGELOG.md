@@ -8,6 +8,11 @@ Todas as mudanças relevantes ficam registradas aqui. O formato segue o
 
 ### Adicionado
 
+- Página inicial com as duas ferramentas (editor de imagens e PDF), atalhos para as tarefas mais
+  comuns, os motivos para usar o Ateliê e os guias. O editor de imagens passa para
+  `/imagens/`.
+- Atalhos no ícone do aplicativo instalado: editor de imagens, ferramentas de PDF e assinar PDF.
+
 - Ícone do site também em `.ico` (16, 32 e 48 px) e PNG (96 px), formatos que o Google e o Bing
   usam para mostrar o ícone ao lado do resultado da busca.
 - Nome do site ("Ateliê de Colagem") nos dados estruturados da página inicial, para os buscadores
@@ -17,6 +22,7 @@ Todas as mudanças relevantes ficam registradas aqui. O formato segue o
 
 - A empresa responsável mudou de nome: de Vértice para Megora ([megora.com.br](https://megora.com.br)).
   Rodapés, termos, privacidade e licença usam o nome novo.
+- As imagens dos guias foram refeitas com o rodapé atual.
 
 ## [0.4.0] - 2026-10-03
 

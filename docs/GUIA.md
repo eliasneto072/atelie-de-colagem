@@ -5,6 +5,13 @@ as imagens ficam no seu aparelho do começo ao fim.
 
 ## Começando
 
+A página inicial ([ateliedecolagem.com.br](https://ateliedecolagem.com.br)) mostra as duas
+ferramentas, o **editor de imagens** (em `/imagens/`) e as **ferramentas de PDF** (em `/pdf/`),
+e atalhos para as tarefas mais comuns, como juntar, assinar ou esconder dados num PDF. O botão
+**Imagens | PDF** no topo de cada ferramenta troca de uma para a outra.
+
+No editor de imagens:
+
 1. Clique em **Abrir imagens** (ou arraste os arquivos para a tela, ou cole com **Ctrl+V**).
    Pode abrir várias de uma vez: cada uma vira uma camada.
 2. A primeira imagem define o tamanho da tela. Para mudar, use **Tela** no topo.
