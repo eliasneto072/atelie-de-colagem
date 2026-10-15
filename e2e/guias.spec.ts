@@ -15,6 +15,7 @@ const path = (url: string) => './' + url.slice(SITE.length);
 /** Guide → where its button goes, and what should be chosen there. */
 const GUIDES: Record<string, { task: string; tool?: string }> = {
   'assinar-pdf': { task: 'editar', tool: 'sign' },
+  'comprimir-pdf': { task: 'comprimir' },
   'esconder-cpf-pdf': { task: 'editar', tool: 'redact' },
   'foto-para-pdf': { task: 'fotos' },
   'juntar-pdf': { task: 'juntar' },
@@ -110,7 +111,9 @@ test('a página inicial leva às duas ferramentas e às tarefas', async ({ page 
   await page.goto('./');
   const hrefs = await page.locator('.tasks a').evaluateAll((as) => as.map((a) => a.getAttribute('href')!));
   for (const h of hrefs)
-    expect(h).toMatch(/^\.\/(imagens\/|pdf\/#(juntar|organizar|editar(\/\w+)?|separar|fotos|imagens))$/);
+    expect(h).toMatch(
+      /^\.\/(imagens\/|pdf\/#(juntar|organizar|editar(\/\w+)?|separar|comprimir|fotos|imagens))$/,
+    );
 });
 
 for (const [slug, target] of Object.entries(GUIDES)) {

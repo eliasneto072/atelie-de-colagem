@@ -3,8 +3,16 @@ import type { PDFDocumentProxy } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { normalizeRotation, type Rot } from '../core/pages';
 import type { Edit, Numbering, Signature, Watermark } from './edits';
 
-export type Task = 'juntar' | 'organizar' | 'editar' | 'separar' | 'fotos' | 'imagens';
-export const TASKS: readonly Task[] = ['juntar', 'organizar', 'editar', 'separar', 'fotos', 'imagens'];
+export type Task = 'juntar' | 'organizar' | 'editar' | 'separar' | 'comprimir' | 'fotos' | 'imagens';
+export const TASKS: readonly Task[] = [
+  'juntar',
+  'organizar',
+  'editar',
+  'separar',
+  'comprimir',
+  'fotos',
+  'imagens',
+];
 
 export type Tool = 'select' | 'text' | 'sign' | 'check' | 'x' | 'dot' | 'cover' | 'redact' | 'highlight';
 
@@ -20,6 +28,8 @@ export interface PdfFile extends SourceBase {
   bytes: Uint8Array;
   password?: string;
   doc: PDFDocumentProxy;
+  /** Has a digital signature, which any change to the file invalidates. */
+  signed: boolean;
 }
 
 export interface ImageFile extends SourceBase {

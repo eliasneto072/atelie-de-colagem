@@ -1,7 +1,8 @@
 /** The side panel: what the chosen task does, its options, and the button that makes the file. */
 import { baseName, describePages, pagesIn, parseRanges } from '../core/pages';
 import { saveImages, saveParts, savePdf } from './actions';
-import { opts, saveOpts } from './options';
+import { formatSize } from '../core/bytes';
+import { opts, saveOpts, TARGET_BYTES, type Target } from './options';
 import { selectAll } from './grid';
 import { editBody, editKey, initEditPanel } from './editPanel';
 import { moveFile, removeFile } from './sources';
@@ -32,6 +33,10 @@ const TITLES: Record<Task, { title: string; text: string }> = {
   separar: {
     title: 'Separar PDF',
     text: 'Tire só as páginas que você precisa ou divida o arquivo em partes.',
+  },
+  comprimir: {
+    title: 'Diminuir o tamanho',
+    text: 'Deixe o PDF menor para enviar por e-mail, WhatsApp ou num site com limite de tamanho. O texto continua texto: só as fotos e as páginas escaneadas são recomprimidas.',
   },
   fotos: {
     title: 'Fotos para PDF',
@@ -76,6 +81,24 @@ const photoOptions = () => `
     <p class="hint">Normal deixa o arquivo menor, bom para enviar em sites e por mensagem.</p>
   </div>`;
 
+const TARGETS: [Target, string][] = [
+  ['500k', 'Até 500 KB'],
+  ['1m', 'Até 1 MB'],
+  ['2m', 'Até 2 MB'],
+  ['5m', 'Até 5 MB'],
+  ['min', 'O menor possível'],
+];
+
+/** How big the open PDFs are now, and whether that already fits the limit chosen. */
+function sizeNow(): string {
+  const pdfs = st.files.filter((f) => f.kind === 'pdf');
+  if (!pdfs.length || pdfs.length !== st.files.length) return '';
+  const size = pdfs.reduce((n, f) => n + f.bytes.length, 0);
+  const limit = TARGET_BYTES[opts.target];
+  const label = pdfs.length > 1 ? 'Os arquivos somam' : 'Tamanho agora:';
+  return `${label} <b>${formatSize(size)}</b>${limit !== undefined && size <= limit ? ' · já cabe nesse limite' : ''}`;
+}
+
 function filesList(): string {
   if (!st.files.length) return '';
   return `<div class="opt"><p class="opt-title">Arquivos</p><ul class="files">${st.files
@@ -93,9 +116,17 @@ function filesList(): string {
     .join('')}</ul></div>`;
 }
 
+/** A warning for PDFs with a digital signature: whatever is downloaded no longer carries it. */
+function signedNote(): string {
+  const signed = st.files.filter((f) => f.kind === 'pdf' && f.signed);
+  if (!signed.length) return '';
+  const who = signed.length === 1 ? `${esc(signed[0].name)} tem` : 'Alguns arquivos têm';
+  return `<p class="note warn" id="o-signed">${who} assinatura digital. Qualquer mudança no arquivo, inclusive diminuir o tamanho, faz a assinatura deixar de valer. Se ela precisa valer, envie o arquivo original.</p>`;
+}
+
 function body(task: Task): string {
   const t = TITLES[task];
-  let h = `<h2>${t.title}</h2><p class="lead">${t.text}</p>`;
+  let h = `<h2>${t.title}</h2><p class="lead">${t.text}</p>${signedNote()}`;
   if (task === 'editar') {
     return (
       h +
@@ -125,6 +156,16 @@ function body(task: Task): string {
       <p class="hint">Cada intervalo vira um PDF. "11-" vai da página 11 até o fim.</p>
     </div>`;
   }
+  if (task === 'comprimir') {
+    h += `<div class="opt"><p class="opt-title">Tamanho máximo</p>
+      ${TARGETS.map(
+        ([v, label]) =>
+          `<label class="radio"><input type="radio" name="o-target" value="${v}"${v === opts.target ? ' checked' : ''} /> ${label}</label>`,
+      ).join('')}
+      <p class="hint">Use o limite do site ou do e-mail para onde o arquivo vai.</p>
+    </div>
+    <p class="size-now" id="o-size-now">${sizeNow()}</p>`;
+  }
   if (task === 'imagens') {
     h += `<div class="opt"><p class="opt-title">Formato</p>${seg('o-format', opts.format, [
       ['jpg', 'JPG'],
@@ -151,6 +192,7 @@ function suggestedName(task: Task): string {
   if (task === 'juntar') return st.files.length > 1 ? `${base}-juntado` : base;
   if (task === 'organizar') return `${base}-organizado`;
   if (task === 'editar') return `${base}-editado`;
+  if (task === 'comprimir') return `${base}-comprimido`;
   if (task === 'fotos') return st.files.every((f) => f.kind === 'image') ? 'fotos' : base;
   return base;
 }
@@ -174,6 +216,8 @@ function primary(task: Task): { label: string; enabled: boolean } {
       return { label: 'Baixar PDF editado', enabled: true };
     case 'fotos':
       return { label: 'Criar PDF', enabled: true };
+    case 'comprimir':
+      return { label: 'Diminuir e baixar PDF', enabled: true };
     case 'separar':
       if (splitMode === 'selecionadas')
         return {
@@ -216,6 +260,10 @@ async function run(): Promise<void> {
   const name = chosenName(task);
   if (task === 'juntar' || task === 'organizar' || task === 'fotos' || task === 'editar')
     return savePdf(st.pages, name);
+  if (task === 'comprimir') {
+    const { saveSmaller } = await import('./shrink');
+    return saveSmaller(st.pages, name, TARGET_BYTES[opts.target]);
+  }
   if (task === 'imagens') {
     const pages = imagesWhich === 'selecionadas' ? selectedPages() : st.pages;
     return saveImages(
@@ -274,6 +322,12 @@ export function initPanel(refresh: () => void): void {
       case 'o-which':
         imagesWhich = t.value as typeof imagesWhich;
         break;
+      case 'o-target': {
+        opts.target = t.value as Target;
+        const note = document.getElementById('o-size-now');
+        if (note) note.innerHTML = sizeNow();
+        break;
+      }
       case 'o-split':
         splitMode = t.value as SplitMode;
         document.getElementById('o-pick-row')?.toggleAttribute('hidden', splitMode !== 'selecionadas');

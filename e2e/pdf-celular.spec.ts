@@ -30,6 +30,19 @@ test.describe('PDF no celular', () => {
     expect(foto.w / foto.h).toBeCloseTo(0.75, 2);
   });
 
+  test('um link para "Diminuir tamanho" mostra a tarefa na fileira', async ({ page }) => {
+    await openPdfTools(page, 'comprimir');
+    const chip = page.locator('[data-task=comprimir]');
+    await expect(chip).toHaveAttribute('aria-pressed', 'true');
+    await expect(chip).toBeInViewport({ ratio: 1 });
+    await addFiles(page, ['foto.jpg'], 1);
+    await page.locator('#panel-toggle').tap();
+    await page.getByLabel('Até 500 KB').tap();
+    const file = await downloadFrom(page);
+    expect(file.name).toBe('foto-comprimido.pdf');
+    expect(file.bytes.length).toBeLessThanOrEqual(500_000);
+  });
+
   test('segura e arrasta uma página para mudar a ordem', async ({ page }) => {
     await openPdfTools(page, 'organizar');
     await addFiles(page, ['relatorio.pdf'], 3);

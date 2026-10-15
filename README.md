@@ -39,6 +39,8 @@ quem usa.
 - **Juntar** PDFs e fotos em um arquivo só.
 - **Organizar** páginas: arrastar para mudar a ordem, girar, tirar, desfazer.
 - **Separar:** só as páginas escolhidas, uma página por arquivo ou partes por intervalo.
+- **Diminuir tamanho** para caber em 500 KB, 1, 2 ou 5 MB: fotos e páginas escaneadas são
+  recomprimidas no tamanho em que aparecem, e o texto continua texto.
 - **Editar e assinar:** escrever na página, marcar caixinhas (✓ ✗ •), assinar (desenhando ou
   pela foto da assinatura) e rubricar todas as páginas, **tarja que apaga de verdade** CPF e
   dados, cobrir, marca-texto, marca d'água de proteção e numeração de páginas.
@@ -47,6 +49,7 @@ quem usa.
 - Abre **PDF com senha** (com a senha do arquivo) e baixa sem senha.
 
 Guias no site: [assinar PDF](https://ateliedecolagem.com.br/assinar-pdf/),
+[comprimir PDF](https://ateliedecolagem.com.br/comprimir-pdf/),
 [esconder CPF em PDF](https://ateliedecolagem.com.br/esconder-cpf-pdf/),
 [foto para PDF](https://ateliedecolagem.com.br/foto-para-pdf/) e
 [juntar PDF](https://ateliedecolagem.com.br/juntar-pdf/).
@@ -109,7 +112,7 @@ public/        ícones, manifest, service worker, robots e sitemap
 index.html     página inicial, com as ferramentas e os atalhos
 imagens/       página do editor de imagens
 pdf/           página das ferramentas de PDF
-*-pdf/         guias (assinar, esconder CPF, foto para PDF, juntar)
+*-pdf/         guias (assinar, comprimir, esconder CPF, foto para PDF, juntar)
 tests/         testes unitários
 e2e/           testes no navegador (computador e celular) e arquivos de exemplo
 docs/          guia, arquitetura, publicação e planos

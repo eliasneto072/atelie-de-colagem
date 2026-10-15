@@ -10,7 +10,7 @@ export { $ };
 let toastTimer: ReturnType<typeof setTimeout> | null = null;
 
 /** A short message at the bottom. An optional action button (e.g. "Desfazer"). */
-export function toast(msg: string, action?: { label: string; run: () => void }): void {
+export function toast(msg: string, action?: { label: string; run: () => void }, ms?: number): void {
   const box = $('toast');
   box.replaceChildren(document.createTextNode(msg));
   if (action) {
@@ -26,7 +26,7 @@ export function toast(msg: string, action?: { label: string; run: () => void }):
   }
   box.classList.add('show');
   if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => box.classList.remove('show'), action ? 6000 : 3200);
+  toastTimer = setTimeout(() => box.classList.remove('show'), ms ?? (action ? 6000 : 3200));
 }
 
 /** Show a blocking "working on it" dialog while `work` runs. */

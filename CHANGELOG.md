@@ -8,6 +8,19 @@ Todas as mudanças relevantes ficam registradas aqui. O formato segue o
 
 ### Adicionado
 
+- Ferramenta **Diminuir tamanho** nas ferramentas de PDF (`/pdf/#comprimir`): escolha até
+  500 KB, 1 MB, 2 MB, 5 MB ou o menor possível, e o Ateliê acha a melhor qualidade que cabe.
+  Fotos e páginas escaneadas são recomprimidas no tamanho em que aparecem na página, e o texto
+  continua texto. Cópias repetidas de imagens, partes sem compressão e restos de versões antigas
+  também saem. Se nem assim couber, ele pergunta antes de transformar as páginas em imagem.
+  Quando as páginas não mudaram, formulários, marcadores e links continuam no arquivo.
+- Guia [Comprimir PDF](https://ateliedecolagem.com.br/comprimir-pdf/), com link na página inicial,
+  nos outros guias e nas ferramentas de PDF.
+- Aviso nas ferramentas de PDF quando o arquivo tem assinatura digital (como a do gov.br):
+  qualquer mudança no arquivo faz a assinatura deixar de valer.
+- Atalho "Preencher formulário" na página inicial.
+- Um link para uma tarefa do fim da fileira (como `#imagens`) mostra a tarefa no celular.
+
 - Página inicial com as duas ferramentas (editor de imagens e PDF), atalhos para as tarefas mais
   comuns, os motivos para usar o Ateliê e os guias. O editor de imagens passa para
   `/imagens/`.

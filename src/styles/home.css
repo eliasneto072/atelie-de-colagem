@@ -104,9 +104,10 @@ h1 {
 }
 
 /* ---- common tasks ---- */
+/* twelve shortcuts: rows of four on a computer, of two on a phone */
 .tasks {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 10px;
   margin: 16px 0 0;
   padding: 0;
@@ -145,6 +146,11 @@ h1 {
   color: var(--muted);
   font-size: 14px;
   line-height: 1.4;
+}
+
+/* the five guides fit one row on a computer */
+.more {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 }
 
 /* ---- why ---- */

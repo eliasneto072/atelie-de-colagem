@@ -86,12 +86,46 @@ const buildOptions = (title: string): BuildOptions => ({
   fontFile: pdfFontFile,
 });
 
-function failed(err: unknown): void {
+export function failed(err: unknown): void {
   console.error(err);
   toast('Não consegui gerar o arquivo. Se o PDF for muito grande, tente com menos páginas.');
 }
 
-const CHARS_NOTE = ' Alguns símbolos não existem nas fontes e saíram como "?".';
+export const CHARS_NOTE = ' Alguns símbolos não existem nas fontes e saíram como "?".';
+
+/** Whether these are exactly the pages of one opened PDF, unchanged and in order. */
+export function untouched(pages: readonly Page[]): PdfFile | null {
+  const file = pages[0]?.source;
+  if (file?.kind !== 'pdf' || pages.length !== file.doc.numPages || st.watermark.on || st.numbering.on)
+    return null;
+  return pages.every((p, i) => p.source === file && p.index === i && p.rotation === 0 && !p.edits.length)
+    ? file
+    : null;
+}
+
+/**
+ * The PDF of these pages as it would download. When nothing about the opened PDF changed,
+ * the file itself (bookmarks, forms and all); otherwise a new build.
+ */
+export async function currentPdf(
+  pages: readonly Page[],
+  name: string,
+  progress: (text: string) => void,
+): Promise<{ bytes: Uint8Array; password?: string; same: boolean; report: BuildReport }> {
+  const report: BuildReport = { replacedChars: false };
+  const file = untouched(pages);
+  if (file) return { bytes: file.bytes, password: file.password, same: true, report };
+  const { buildPdfs } = await builder();
+  const [bytes] = await buildPdfs(
+    [await toOut(pages)],
+    {
+      ...buildOptions(name),
+      onPage: (d, t) => t > 8 && progress(`Montando o PDF… ${d} de ${t} páginas`),
+    },
+    report,
+  );
+  return { bytes, same: false, report };
+}
 
 /** One PDF with these pages, in this order. */
 export async function savePdf(pages: readonly Page[], name: string): Promise<void> {

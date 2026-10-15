@@ -74,7 +74,7 @@ export interface BuildReport {
   replacedChars: boolean;
 }
 
-const PRODUCER = 'Ateliê de Colagem (ateliedecolagem.com.br)';
+export const PRODUCER = 'Ateliê de Colagem (ateliedecolagem.com.br)';
 
 /** Open a PDF for copying pages, trying an empty password for "protected against changes" files. */
 export async function loadForCopy(src: PdfSource): Promise<PDFDocument> {

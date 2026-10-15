@@ -121,7 +121,7 @@ as ferramentas de PDF. Como no editor, nada é enviado: os arquivos são lidos e
 aparelho.
 
 1. Escolha o que quer fazer na fileira de cima: **Juntar**, **Organizar**, **Editar e
-   assinar**, **Separar**, **Fotos → PDF** ou **PDF → imagens**.
+   assinar**, **Separar**, **Diminuir tamanho**, **Fotos → PDF** ou **PDF → imagens**.
 2. Abra os arquivos: botão **Adicionar**, arrastando para a página ou colando (Ctrl+V). PDFs e
    fotos podem ser misturados.
 3. Cada página aparece como um cartão, na ordem em que vai sair.
@@ -146,6 +146,14 @@ aparelho.
 - **Editar e assinar:** escreva, assine e esconda dados (veja abaixo).
 - **Separar:** só as páginas escolhidas (clicando ou digitando, como `1-3, 5`), cada página em
   um PDF ou em partes por intervalos (`1-3, 4-10, 11-`). Mais de um arquivo vem num ZIP.
+- **Diminuir tamanho:** escolha o tamanho máximo (até 500 KB, 1 MB, 2 MB, 5 MB ou o menor
+  possível) e toque em **Diminuir e baixar PDF**. O Ateliê procura a melhor qualidade que cabe no
+  limite e mostra o tamanho de antes e de depois. Só as fotos e as páginas escaneadas são
+  recomprimidas, no tamanho em que aparecem na página; o texto continua texto. Se nem assim
+  couber, ele pergunta antes de transformar as páginas em imagem (o arquivo fica bem menor, mas
+  não dá mais para selecionar nem pesquisar o texto). Um PDF que já cabe no limite não é baixado
+  de novo. Quando você só diminui o tamanho, sem mexer nas páginas, os campos de formulário, os
+  marcadores e os links do PDF continuam lá.
 - **Fotos → PDF:** tamanho da página A4, Carta ou igual à foto, com ou sem margem, e qualidade
   normal (arquivo menor) ou alta. Fotos tiradas de lado ficam em pé sozinhas. No celular, o
   botão **Tirar foto** abre a câmera.
@@ -192,9 +200,14 @@ No painel ficam também:
 
 Para mandar alguém direto para uma ferramenta, use o endereço com o nome dela:
 `ateliedecolagem.com.br/pdf/#editar/assinar`, `#editar/tarja`, `#editar/texto` e assim por
-diante. Para as outras tarefas: `#juntar`, `#organizar`, `#separar`, `#fotos` e `#imagens`.
+diante. Para as outras tarefas: `#juntar`, `#organizar`, `#separar`, `#comprimir`, `#fotos` e
+`#imagens`.
 
-O que você escreveu vai junto em todas as tarefas: ao juntar, separar ou gerar imagens, as
+Um PDF com **assinatura digital** (como a do gov.br) ganha um aviso no painel: qualquer mudança
+no arquivo, inclusive diminuir o tamanho, faz a assinatura deixar de valer. Se ela precisa valer,
+envie o arquivo original.
+
+O que você escreveu vai junto em todas as tarefas: ao juntar, separar, diminuir ou gerar imagens, as
 páginas saem com os textos, assinaturas e tarjas.
 
 > **Sobre a validade da assinatura:** a assinatura desenhada é uma imagem na página, como uma

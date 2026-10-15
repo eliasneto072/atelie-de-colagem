@@ -1,4 +1,5 @@
 /** Opening files: PDFs (asking for a password when needed) and photos. */
+import { includesAscii } from '../core/bytes';
 import { normalizeRotation } from '../core/pages';
 import { NeedsPassword, openPdf } from './pdfjs';
 import { newId, nextColor, st, type ImageFile, type Page, type PdfFile } from './state';
@@ -14,7 +15,9 @@ async function readPdf(file: File): Promise<PdfFile | null> {
   for (;;) {
     try {
       const doc = await openPdf(bytes, password);
-      return { kind: 'pdf', id: newId(), name: file.name, color: nextColor(), bytes, password, doc };
+      // a signature covers byte ranges of the file, so its dictionary is never compressed away
+      const signed = includesAscii(bytes, '/ByteRange');
+      return { kind: 'pdf', id: newId(), name: file.name, color: nextColor(), bytes, password, doc, signed };
     } catch (err) {
       if (!(err instanceof NeedsPassword)) throw err;
       const typed = await askPassword(file.name, err.wrong);

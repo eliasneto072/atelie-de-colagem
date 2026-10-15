@@ -39,7 +39,9 @@ O que vem pela frente, em ordem de prioridade. Sugestões são bem-vindas nas
 
 ## PDF, fase 3: avançado (0.5)
 
-- **Diminuir o tamanho** para caber nos limites de sites do governo (2 ou 5 MB).
+- [x] **Diminuir o tamanho** para caber no limite de sites e e-mail (500 KB, 1, 2 ou 5 MB), com o
+      texto continuando texto e páginas em imagem só se a pessoa quiser
+- Diminuir só as páginas mais pesadas em imagem, em vez de todas, quando nem assim couber.
 - **Escanear com o celular:** endireitar a folha e melhorar o contraste.
 - **OCR** em português: PDF escaneado vira PDF pesquisável.
 - **Ponte com o editor de imagens:** abrir uma página no editor (remover objeto, trocar cor) e
@@ -67,6 +69,7 @@ O que vem pela frente, em ordem de prioridade. Sugestões são bem-vindas nas
 - [x] Guias para as buscas mais comuns de PDF, cada um com o passo a passo, uma imagem real da
       ferramenta, perguntas frequentes e um botão que abre a ferramenta na tarefa certa:
       [assinar PDF](https://ateliedecolagem.com.br/assinar-pdf/),
+      [comprimir PDF](https://ateliedecolagem.com.br/comprimir-pdf/),
       [esconder CPF em PDF](https://ateliedecolagem.com.br/esconder-cpf-pdf/),
       [foto para PDF](https://ateliedecolagem.com.br/foto-para-pdf/) e
       [juntar PDF](https://ateliedecolagem.com.br/juntar-pdf/)

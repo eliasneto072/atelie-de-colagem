@@ -40,7 +40,7 @@
         "inLanguage": "pt-BR",
         "isAccessibleForFree": true,
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
-        "description": "Juntar PDFs, separar e reorganizar páginas, escrever e assinar, tarja para esconder dados, marca d'água, numeração, fotos para PDF e PDF para imagem, direto no navegador e sem enviar os arquivos.",
+        "description": "Juntar PDFs, separar e reorganizar páginas, escrever e assinar, tarja para esconder dados, marca d'água, numeração, diminuir o tamanho, fotos para PDF e PDF para imagem, direto no navegador e sem enviar os arquivos.",
         "creator": {
           "@type": "Organization",
           "name": "Megora",
@@ -86,6 +86,7 @@
         <button type="button" class="task" data-task="organizar">Organizar</button>
         <button type="button" class="task" data-task="editar">Editar e assinar</button>
         <button type="button" class="task" data-task="separar">Separar</button>
+        <button type="button" class="task" data-task="comprimir">Diminuir tamanho</button>
         <button type="button" class="task" data-task="fotos">Fotos → PDF</button>
         <button type="button" class="task" data-task="imagens">PDF → imagens</button>
       </nav>
@@ -150,6 +151,7 @@
               <a href="../esconder-cpf-pdf/">Esconder CPF</a>
               <a href="../foto-para-pdf/">Foto para PDF</a>
               <a href="../juntar-pdf/">Juntar PDF</a>
+              <a href="../comprimir-pdf/">Comprimir PDF</a>
             </nav>
           </div>
 
@@ -521,6 +523,21 @@
         <div class="dialog-actions">
           <button class="btn" value="cancel">Cancelar</button>
           <button class="btn primary" value="ok">Usar assinatura</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="dialog" id="shrink-dialog" aria-labelledby="shrink-title">
+      <form method="dialog">
+        <h3 id="shrink-title">Ainda está grande</h3>
+        <p id="shrink-text"></p>
+        <p class="hint">
+          Dá para transformar as páginas em imagem: o arquivo fica bem menor, mas o texto deixa de ser texto.
+          Não dá mais para selecionar, copiar nem pesquisar palavras nele.
+        </p>
+        <div class="dialog-actions">
+          <button class="btn" value="keep" id="shrink-keep">Baixar assim</button>
+          <button class="btn primary" value="pictures">Transformar em imagem</button>
         </div>
       </form>
     </dialog>

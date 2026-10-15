@@ -29,7 +29,7 @@ const PUBLIC_OFFLINE = [
  * to keep them (see the 'cache-pdf' message in public/sw.js).
  */
 /** Guide pages that explain a task and link into the tool (also listed in public/sitemap.xml). */
-const GUIDES = ['assinar-pdf', 'esconder-cpf-pdf', 'foto-para-pdf', 'juntar-pdf'];
+const GUIDES = ['assinar-pdf', 'comprimir-pdf', 'esconder-cpf-pdf', 'foto-para-pdf', 'juntar-pdf'];
 const GUIDE_PAGE = new RegExp(`^(${GUIDES.join('|')})/index\\.html$`);
 
 const PDF_ONLY = /^(assets\/pdf\/|pdfjs\/|pdf\/)/;

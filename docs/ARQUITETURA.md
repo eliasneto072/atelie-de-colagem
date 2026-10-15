@@ -149,28 +149,31 @@ do aparelho para a memória.
 Uma página própria (`pdf/index.html`, código em `src/pdf/`), com o mesmo visual e sem depender
 do editor de imagens.
 
-| Arquivo                | O que faz                                                                                        |
-| ---------------------- | ------------------------------------------------------------------------------------------------ |
-| `src/pdf/state.ts`     | Arquivos abertos, páginas na ordem atual, tarefa escolhida e o desfazer.                         |
-| `src/pdf/sources.ts`   | Abre PDFs (pedindo senha quando preciso) e fotos (já em pé, pelo EXIF).                          |
-| `src/pdf/pdfjs.ts`     | Carrega o pdf.js só quando o primeiro PDF é aberto.                                              |
-| `src/pdf/thumbs.ts`    | Miniaturas desenhadas só quando o cartão aparece na tela, guardadas como JPEG pequeno.           |
-| `src/pdf/grid.ts`      | A grade de cartões: seleção, girar, tirar, arrastar (no toque: segurar e arrastar).              |
-| `src/pdf/panel.ts`     | O painel de cada tarefa e o botão que gera o arquivo.                                            |
-| `src/pdf/actions.ts`   | Gera o PDF, as partes e as imagens, e entrega o download.                                        |
-| `src/pdf/build.ts`     | Monta os PDFs com pdf-lib. Roda também no Node, para os testes.                                  |
-| `src/pdf/edits.ts`     | O que se põe na página: texto, assinatura, marca, caixa; marca d'água e numeração.               |
-| `src/pdf/draw.ts`      | Desenha essas edições no PDF com pdf-lib (também no Node).                                       |
-| `src/pdf/viewer.ts`    | O editor de "Editar e assinar": páginas grandes e os gestos de pôr e mexer nos itens.            |
-| `src/pdf/editPanel.ts` | O painel do editor: opções do item selecionado, assinaturas, marca d'água, números.              |
-| `src/pdf/signature.ts` | A janela da assinatura: desenho ou foto do papel, recortada e com fundo transparente.            |
-| `src/pdf/paint.ts`     | Desenha uma página no canvas e gera a imagem da página com tarja.                                |
-| `src/pdf/options.ts`   | Opções guardadas no aparelho (tamanho de página, margem, formato das imagens).                   |
-| `src/pdf/docText.ts`   | Lê o texto que já está na página (fonte, tamanho, linha) para o texto novo combinar.             |
-| `src/pdf/fontFiles.ts` | As fontes de escrever: arquivos para a tela e para embutir no PDF, e o acerto da linha de base.  |
-| `src/core/fonts.ts`    | Funções puras: reconhecer a fonte pelo nome, achar a linha do clique e a cor da tinta.           |
-| `src/pdf/route.ts`     | Links que abrem uma tarefa e, em "Editar e assinar", uma ferramenta: `#editar/tarja`.            |
-| `src/core/pages.ts`    | Funções puras: intervalos, tamanho de página, encaixe da foto e a geometria das páginas giradas. |
+| Arquivo                  | O que faz                                                                                                    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `src/pdf/state.ts`       | Arquivos abertos, páginas na ordem atual, tarefa escolhida e o desfazer.                                     |
+| `src/pdf/sources.ts`     | Abre PDFs (pedindo senha quando preciso) e fotos (já em pé, pelo EXIF).                                      |
+| `src/pdf/pdfjs.ts`       | Carrega o pdf.js só quando o primeiro PDF é aberto.                                                          |
+| `src/pdf/thumbs.ts`      | Miniaturas desenhadas só quando o cartão aparece na tela, guardadas como JPEG pequeno.                       |
+| `src/pdf/grid.ts`        | A grade de cartões: seleção, girar, tirar, arrastar (no toque: segurar e arrastar).                          |
+| `src/pdf/panel.ts`       | O painel de cada tarefa e o botão que gera o arquivo.                                                        |
+| `src/pdf/actions.ts`     | Gera o PDF, as partes e as imagens, e entrega o download.                                                    |
+| `src/pdf/build.ts`       | Monta os PDFs com pdf-lib. Roda também no Node, para os testes.                                              |
+| `src/pdf/edits.ts`       | O que se põe na página: texto, assinatura, marca, caixa; marca d'água e numeração.                           |
+| `src/pdf/draw.ts`        | Desenha essas edições no PDF com pdf-lib (também no Node).                                                   |
+| `src/pdf/viewer.ts`      | O editor de "Editar e assinar": páginas grandes e os gestos de pôr e mexer nos itens.                        |
+| `src/pdf/editPanel.ts`   | O painel do editor: opções do item selecionado, assinaturas, marca d'água, números.                          |
+| `src/pdf/signature.ts`   | A janela da assinatura: desenho ou foto do papel, recortada e com fundo transparente.                        |
+| `src/pdf/paint.ts`       | Desenha uma página no canvas e gera a imagem da página com tarja.                                            |
+| `src/pdf/compress.ts`    | Diminuir tamanho: recomprime as imagens, limpa o arquivo sem perda e monta páginas em imagem.                |
+| `src/pdf/contentScan.ts` | Lê as instruções de desenho da página para saber o tamanho em que cada imagem aparece.                       |
+| `src/pdf/shrink.ts`      | A parte do navegador: o canvas faz os JPEG, o pdf.js desenha as páginas, e a pergunta antes de virar imagem. |
+| `src/pdf/options.ts`     | Opções guardadas no aparelho (tamanho de página, margem, formato das imagens).                               |
+| `src/pdf/docText.ts`     | Lê o texto que já está na página (fonte, tamanho, linha) para o texto novo combinar.                         |
+| `src/pdf/fontFiles.ts`   | As fontes de escrever: arquivos para a tela e para embutir no PDF, e o acerto da linha de base.              |
+| `src/core/fonts.ts`      | Funções puras: reconhecer a fonte pelo nome, achar a linha do clique e a cor da tinta.                       |
+| `src/pdf/route.ts`       | Links que abrem uma tarefa e, em "Editar e assinar", uma ferramenta: `#editar/tarja`.                        |
+| `src/core/pages.ts`      | Funções puras: intervalos, tamanho de página, encaixe da foto e a geometria das páginas giradas.             |
 
 Decisões:
 
@@ -213,6 +216,26 @@ Decisões:
   copiado. Por isso a página com tarja é desenhada a 200 dpi com as faixas já pintadas e o PDF
   recebe só essa imagem no lugar da página. As outras páginas continuam sendo copiadas sem perda.
   O teste confere que o pdf.js não encontra texto nenhum nessa página.
+- **Diminuir tamanho sem virar imagem.** O peso de um PDF quase sempre está nas fotos e nas
+  páginas escaneadas, então `compress.ts` mexe só nelas. Para cada imagem, `contentScan.ts` lê as
+  instruções de desenho das páginas (e dos formulários XObject dentro delas) e acha o maior
+  tamanho em que ela aparece; a imagem é reduzida para a resolução do nível (de 200 a 100 dpi
+  nesse tamanho) e recodificada em JPEG (qualidade de 0,8 a 0,5). Cada imagem é decodificada uma
+  vez e codificada em todos os níveis; o tamanho de cada nível é estimado pela soma dos JPEG e
+  conferido salvando o PDF, e fica o nível mais leve que cabe no limite. Ficam de fora o que o
+  JPEG estragaria ou o navegador não lê igual a um leitor de PDF: desenhos com poucas cores,
+  máscaras, transparência por cor, CMYK, JPEG 2000, imagens de 1 bit e as que têm um `/Decode`
+  diferente do padrão (cores invertidas). O bloco EXIF sai antes de decodificar, porque o
+  navegador giraria a foto pela orientação e o PDF não. Sem perda, o arquivo também perde cópias repetidas de imagens e fontes, ganha compressão
+  nas partes que estavam sem, e fica sem os objetos que nada usa (versões antigas, `PieceInfo`,
+  miniaturas). Quando as páginas não mudaram, o PDF original é o ponto de partida, e formulário,
+  marcadores e links continuam. Nada sai maior do que entrou.
+- **Páginas em imagem só com permissão.** Se nem assim couber, a pessoa escolhe entre baixar como
+  ficou e transformar as páginas em imagem (`PAGE_LEVELS`, de 150 a 72 dpi). Cada página é
+  desenhada uma vez pelo pdf.js e codificada em todos os níveis.
+- **Tamanhos como as pessoas leem** (`src/core/bytes.ts`): unidades decimais, como celulares e
+  sites contam, e um arquivo logo acima de um limite aparece com duas casas ("2,01 MB"), para não
+  parecer que cabe.
 - **Assinaturas são PNG transparentes** que ficam só na memória da aba. A foto de uma assinatura
   no papel vira tinta sobre transparência por um limiar a partir do brilho do papel.
 - **Sem internet:** esses arquivos ficam fora do pré-cache do editor (quem só edita imagens não
@@ -221,12 +244,13 @@ Decisões:
   escaneadas e as fontes padrão do pdf.js (`/pdfjs/`) são baixados e guardados só quando um PDF
   precisa deles.
 
-## Guias (`/assinar-pdf/`, `/esconder-cpf-pdf/`, `/foto-para-pdf/`, `/juntar-pdf/`)
+## Guias (`/assinar-pdf/`, `/comprimir-pdf/`, `/esconder-cpf-pdf/`, `/foto-para-pdf/`, `/juntar-pdf/`)
 
 Páginas estáticas para quem chega pela busca: título e descrição com as palavras que as pessoas
 digitam, passo a passo, uma imagem real da ferramenta (`public/guias/`, WebP na página e JPG para
 redes sociais), perguntas frequentes e um botão que abre a ferramenta já na tarefa certa
-(`../pdf/#editar/assinar`, `../pdf/#editar/tarja`, `../pdf/#fotos`, `../pdf/#juntar`). O estilo
+(`../pdf/#editar/assinar`, `../pdf/#comprimir`, `../pdf/#editar/tarja`, `../pdf/#fotos`,
+`../pdf/#juntar`). O estilo
 fica em `src/styles/guia.css`.
 
 - Cada guia tem dados estruturados (`WebPage`, `BreadcrumbList` e `FAQPage`); as perguntas do

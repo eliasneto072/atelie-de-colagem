@@ -4,6 +4,7 @@ import { routeFromHash } from '../src/pdf/route';
 describe('links into the PDF tools', () => {
   it('opens the task in the hash, and "juntar" when there is none or it is unknown', () => {
     expect(routeFromHash('#fotos')).toEqual({ task: 'fotos', tool: null });
+    expect(routeFromHash('#comprimir')).toEqual({ task: 'comprimir', tool: null });
     expect(routeFromHash('')).toEqual({ task: 'juntar', tool: null });
     expect(routeFromHash('#qualquer')).toEqual({ task: 'juntar', tool: null });
   });

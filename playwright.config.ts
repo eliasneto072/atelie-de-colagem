@@ -24,7 +24,13 @@ export default defineConfig({
   projects: [
     {
       name: 'desktop',
-      testMatch: ['desktop.spec.ts', 'pdf.spec.ts', 'pdf-editar.spec.ts', 'guias.spec.ts'],
+      testMatch: [
+        'desktop.spec.ts',
+        'pdf.spec.ts',
+        'pdf-editar.spec.ts',
+        'pdf-comprimir.spec.ts',
+        'guias.spec.ts',
+      ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1360, height: 820 } },
     },
     {

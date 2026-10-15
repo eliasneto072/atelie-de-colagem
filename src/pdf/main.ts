@@ -34,6 +34,7 @@ const HINTS: Record<Task, string> = {
   organizar: 'Abra um PDF para mudar a ordem, girar ou tirar páginas.',
   editar: 'Abra o PDF para escrever, assinar, marcar caixinhas ou esconder dados.',
   separar: 'Abra o PDF que você quer separar.',
+  comprimir: 'Abra o PDF que você quer deixar menor.',
   fotos: 'Escolha as fotos: da galeria, dos arquivos ou tirando na hora.',
   imagens: 'Abra o PDF que vai virar imagens.',
 };
@@ -208,6 +209,8 @@ initPanel(refresh);
 initFiles();
 initToolbar();
 refresh();
+// on a phone the row of tasks scrolls: a link to a task at the end shows it
+document.querySelector('.task[aria-pressed=true]')?.scrollIntoView({ block: 'nearest', inline: 'center' });
 registerServiceWorker('../');
 
 // keep the PDF tools for offline use (the service worker skips them for editor-only visitors)
